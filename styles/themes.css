@@ -1,0 +1,129 @@
+/* Sistema de diseño pixel art - Habit Go */
+
+:root {
+  /* Colores principales */
+  --pixel-primary: #4ade80;
+  --pixel-primary-dark: #22c55e;
+  --pixel-primary-light: #86efac;
+  
+  --pixel-secondary: #60a5fa;
+  --pixel-secondary-dark: #3b82f6;
+  --pixel-secondary-light: #93c5fd;
+  
+  --pixel-accent: #fbbf24;
+  --pixel-accent-dark: #f59e0b;
+  --pixel-accent-light: #fcd34d;
+  
+  --pixel-danger: #ef4444;
+  --pixel-danger-dark: #dc2626;
+  --pixel-danger-light: #f87171;
+  
+  --pixel-success: #10b981;
+  --pixel-warning: #f59e0b;
+  --pixel-info: #3b82f6;
+  
+  /* Grises */
+  --pixel-gray-50: #f9fafb;
+  --pixel-gray-100: #f3f4f6;
+  --pixel-gray-200: #e5e7eb;
+  --pixel-gray-300: #d1d5db;
+  --pixel-gray-400: #9ca3af;
+  --pixel-gray-500: #6b7280;
+  --pixel-gray-600: #4b5563;
+  --pixel-gray-700: #374151;
+  --pixel-gray-800: #1f2937;
+  --pixel-gray-900: #111827;
+  
+  /* Backgrounds */
+  --pixel-bg-grass: #7cb342;
+  --pixel-bg-dirt: #8b6f47;
+  --pixel-bg-water: #4fc3f7;
+  --pixel-bg-stone: #78909c;
+  
+  /* Tamaños */
+  --pixel-sm: 12px;
+  --pixel-md: 16px;
+  --pixel-lg: 24px;
+  --pixel-xl: 32px;
+  --pixel-2xl: 48px;
+  
+  /* Espaciado */
+  --pixel-space-xs: 4px;
+  --pixel-space-sm: 8px;
+  --pixel-space-md: 16px;
+  --pixel-space-lg: 24px;
+  --pixel-space-xl: 32px;
+  --pixel-space-2xl: 48px;
+  
+  /* Bordes pixel */
+  --pixel-border-sm: 2px;
+  --pixel-border-md: 3px;
+  --pixel-border-lg: 4px;
+  
+  /* Sombras pixel */
+  --pixel-shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.25);
+  --pixel-shadow-md: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  --pixel-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.25);
+  
+  /* Fuentes */
+  --font-pixel: 'Press Start 2P', cursive;
+  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans);
+}
+
+/* Utilidades pixel */
+.pixel-render {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.pixel-text {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.05em;
+}
+
+.pixel-border {
+  border: var(--pixel-border-md) solid currentColor;
+}
+
+.pixel-shadow {
+  box-shadow: var(--pixel-shadow-md);
+}
+
+.pixel-shadow-hover {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pixel-shadow-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--pixel-shadow-lg);
+}
+
+.pixel-shadow-hover:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--pixel-shadow-sm);
+}
+
+/* Backgrounds patterns */
+.bg-grass-pattern {
+  background-color: var(--pixel-bg-grass);
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.05) 10px, rgba(0,0,0,.05) 20px);
+}
+
+.bg-dirt-pattern {
+  background-color: var(--pixel-bg-dirt);
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0,0,0,.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(0,0,0,.1) 2px, transparent 2px);
+  background-size: 20px 20px;
+}
+
+.bg-stone-pattern {
+  background-color: var(--pixel-bg-stone);
+  background-image: 
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 8px 8px;
+}

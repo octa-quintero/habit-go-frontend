@@ -1,11 +1,20 @@
 @import "tailwindcss";
+@import "../styles/themes.css";
+
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -20,7 +29,12 @@
 }
 
 body {
-  background: var(--background);
+  background: url('/background/Water.gif') repeat;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  image-rendering: pixelated;
+}
+
+.font-press-start {
+  font-family: 'Press Start 2P', Arial, Helvetica, sans-serif !important;
 }
