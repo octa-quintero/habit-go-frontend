@@ -1,28 +1,34 @@
-/* Sistema de diseño pixel art - Habit Go */
+/* ========================================
+   DESIGN SYSTEM - Pixel Art Theme (Habit Go)
+   ======================================== */
 
 :root {
-  /* Colores principales */
+  /* ======================================== 
+     COLORS - Primary Palette
+     ======================================== */
   --pixel-primary: #4ade80;
   --pixel-primary-dark: #22c55e;
   --pixel-primary-light: #86efac;
-  
+
+  /* Secondary Palette */
   --pixel-secondary: #60a5fa;
   --pixel-secondary-dark: #3b82f6;
   --pixel-secondary-light: #93c5fd;
-  
+
+  /* Accent Palette */
   --pixel-accent: #fbbf24;
   --pixel-accent-dark: #f59e0b;
   --pixel-accent-light: #fcd34d;
-  
+
+  /* Semantic Colors */
   --pixel-danger: #ef4444;
   --pixel-danger-dark: #dc2626;
   --pixel-danger-light: #f87171;
-  
   --pixel-success: #10b981;
   --pixel-warning: #f59e0b;
   --pixel-info: #3b82f6;
-  
-  /* Grises */
+
+  /* Grayscale */
   --pixel-gray-50: #f9fafb;
   --pixel-gray-100: #f3f4f6;
   --pixel-gray-200: #e5e7eb;
@@ -33,64 +39,88 @@
   --pixel-gray-700: #374151;
   --pixel-gray-800: #1f2937;
   --pixel-gray-900: #111827;
-  
-  /* Backgrounds */
+
+  /* ======================================== 
+     BACKGROUNDS - Themed Colors
+     ======================================== */
   --pixel-bg-grass: #7cb342;
   --pixel-bg-dirt: #8b6f47;
   --pixel-bg-water: #4fc3f7;
   --pixel-bg-stone: #78909c;
-  
-  /* Tamaños */
+
+  /* ======================================== 
+     SIZING - Typography & Components
+     ======================================== */
   --pixel-sm: 12px;
   --pixel-md: 16px;
   --pixel-lg: 24px;
   --pixel-xl: 32px;
   --pixel-2xl: 48px;
-  
-  /* Espaciado */
+
+  /* ======================================== 
+     SPACING - Layout & Margins
+     ======================================== */
   --pixel-space-xs: 4px;
   --pixel-space-sm: 8px;
   --pixel-space-md: 16px;
   --pixel-space-lg: 24px;
   --pixel-space-xl: 32px;
   --pixel-space-2xl: 48px;
-  
-  /* Bordes pixel */
+
+  /* ======================================== 
+     BORDERS - Retro Style
+     ======================================== */
   --pixel-border-sm: 2px;
   --pixel-border-md: 3px;
   --pixel-border-lg: 4px;
-  
-  /* Sombras pixel */
+
+  /* ======================================== 
+     SHADOWS - Drop Shadow Effects
+     ======================================== */
   --pixel-shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.25);
   --pixel-shadow-md: 4px 4px 0 rgba(0, 0, 0, 0.25);
   --pixel-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.25);
-  
-  /* Fuentes */
+
+  /* ======================================== 
+     TYPOGRAPHY - Font Families
+     ======================================== */
   --font-pixel: 'Press Start 2P', cursive;
   --font-mono: var(--font-geist-mono);
   --font-sans: var(--font-geist-sans);
 }
 
-/* Utilidades pixel */
+/* ========================================
+   UTILITY CLASSES - Pixel Art Effects
+   ======================================== */
+
+/* Image Rendering - Crisp Pixel Display */
 .pixel-render {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
 }
 
+/* Typography - Pixel Font */
 .pixel-text {
   font-family: var(--font-pixel);
   letter-spacing: 0.05em;
 }
 
+/* ========================================
+   BORDER & SHADOW UTILITIES
+   ======================================== */
+
+/* Pixel Border */
 .pixel-border {
   border: var(--pixel-border-md) solid currentColor;
 }
 
+/* Pixel Shadow - Base */
 .pixel-shadow {
   box-shadow: var(--pixel-shadow-md);
 }
 
+/* Pixel Shadow - Interactive (Hover/Active) */
 .pixel-shadow-hover {
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
@@ -105,25 +135,36 @@
   box-shadow: var(--pixel-shadow-sm);
 }
 
-/* Backgrounds patterns */
+/* ========================================
+   BACKGROUND PATTERNS - Themed Biomes
+   ======================================== */
+
+/* Grass Pattern - Nature Theme */
 .bg-grass-pattern {
   background-color: var(--pixel-bg-grass);
-  background-image: 
-    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.05) 10px, rgba(0,0,0,.05) 20px);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.05) 10px,
+    rgba(0, 0, 0, 0.05) 20px
+  );
 }
 
+/* Dirt Pattern - Earth Theme */
 .bg-dirt-pattern {
   background-color: var(--pixel-bg-dirt);
   background-image: 
-    radial-gradient(circle at 25% 25%, rgba(0,0,0,.1) 2px, transparent 2px),
-    radial-gradient(circle at 75% 75%, rgba(0,0,0,.1) 2px, transparent 2px);
+    radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.1) 2px, transparent 2px);
   background-size: 20px 20px;
 }
 
+/* Stone Pattern - Rock Theme */
 .bg-stone-pattern {
   background-color: var(--pixel-bg-stone);
   background-image: 
-    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 8px 8px;
 }

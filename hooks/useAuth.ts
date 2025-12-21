@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/axios';
-import { saveTokens, saveUser, clearAuth, getUser } from '@/lib/auth';
-import type { LoginRequest, LoginResponse, UserData } from '@/types/api';
+import { authService } from '@/lib/api';
+import { getUser } from '@/lib/auth';
+import type { LoginRequest, CreateUserDto, UserData } from '@/types/api';
 
 export function useAuth() {
   const router = useRouter();
@@ -17,16 +17,9 @@ export function useAuth() {
     setError(null);
     
     try {
-      const { data } = await api.post<LoginResponse>('/auth/login', credentials);
-      
-      // Guardar tokens y usuario
-      saveTokens(data.accessToken, data.refreshToken);
-      saveUser(data.userData);
+      const data = await authService.login(credentials);
       setUser(data.userData);
-      
-      // Redirigir al dashboard
       router.push('/dashboard');
-      
       return data;
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Error al iniciar sesión';
@@ -41,23 +34,22 @@ export function useAuth() {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
-        await api.post('/auth/logout', { refreshToken });
+        await authService.logout(refreshToken);
       }
     } catch (err) {
       console.error('Error al cerrar sesión:', err);
     } finally {
-      clearAuth();
       setUser(null);
       router.push('/login');
     }
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: CreateUserDto) => {
     setLoading(true);
     setError(null);
     
     try {
-      await api.post('/users/:create', userData);
+      await authService.register(userData);
       // Después de registrar, hacer login automático
       await login({ email: userData.email, password: userData.password });
     } catch (err: any) {
