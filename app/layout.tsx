@@ -23,9 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{
+          backgroundImage: 'url(/background/Water.gif)',
+          backgroundRepeat: 'repeat',
+          backgroundAttachment: 'fixed',
+          imageRendering: 'pixelated',
+        }}
       >
         {children}
       </body>

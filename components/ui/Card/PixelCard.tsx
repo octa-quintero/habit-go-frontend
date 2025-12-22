@@ -1,31 +1,43 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 
 export interface PixelCardProps {
   children: React.ReactNode;
-  width?: number;
-  height?: number;
   className?: string;
+  /** Gap entre elementos hijos (clase Tailwind) */
+  gap?: string;
 }
-
-const BASE_WIDTH = 900;
-const BASE_HEIGHT = 700;
 
 const PixelCard: React.FC<PixelCardProps> = ({
   children,
-  width = BASE_WIDTH,
-  height = BASE_HEIGHT,
   className = '',
+  gap = 'gap-6',
 }) => {
   return (
-    <div
-      className={`flex flex-col items-center justify-center p-4 sm:p-8 w-full max-w-[900px] h-auto min-h-[400px] sm:min-h-[700px] ${className}`}
+    <div 
+      className={`relative w-[90vw] sm:w-[80vw] md:w-[95vw] lg:w-[60vw] max-w-[900px] mx-auto ${className}`}
       style={{
-        background: `url('/card/card.png') no-repeat center/contain`,
-        imageRendering: 'pixelated',
-        boxSizing: 'border-box',
+        aspectRatio: '900 / 700',
       }}
     >
-      {children}
+      {/* Imagen de fondo que llena el card */}
+      <img
+        src="/card/card.png"
+        alt=""
+        className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none"
+        style={{ imageRendering: 'pixelated', zIndex: 0 }}
+        draggable={false}
+      />
+      
+      {/* Contenido con scroll si excede el tamaño */}
+      <div 
+        className={`relative z-10 w-full h-full flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden ${gap}`}
+        style={{
+          padding: '8% 10%',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };
