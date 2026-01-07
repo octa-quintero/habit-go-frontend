@@ -1,7 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import SpriteButton from '../../ui/Button/SpriteButton';
 import PixelInput from '../../ui/Input/PixelInput';
 import PixelText from '../../ui/Text/PixelText';
 import { authService } from '@/lib/api/authService';
@@ -11,12 +10,16 @@ export interface RegisterFormProps {
   onSuccess?: () => void;
   /** Clases CSS adicionales */
   className?: string;
+  /** Ref para exponer métodos del formulario */
+  formRef?: React.MutableRefObject<{ submit: () => void } | null>;
+  /** Callback para loading state */
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 /**
  * RegisterForm - Formulario completo de registro con validación
  */
-const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }) => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', formRef, onLoadingChange }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -27,43 +30,53 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const formDataRef = useRef(formData);
+
+  // Actualizar ref cuando formData cambia
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
+    if (error) {
+      setError('');
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = useCallback(async (e?: React.FormEvent | null) => {
+    if (e) e.preventDefault();
+    
+    const currentData = formDataRef.current;
 
     // Validaciones básicas
-    if (!formData.name || !formData.username || !formData.email || !formData.password) {
+    if (!currentData.name.trim() || !currentData.username.trim() || !currentData.email.trim() || !currentData.password || !currentData.confirmPassword) {
       setError('Todos los campos son obligatorios');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (currentData.password !== currentData.confirmPassword) {
       setError('Las contraseñas no coinciden');
       return;
     }
 
-    if (formData.password.length < 8) {
+    if (currentData.password.length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
     setLoading(true);
+    setError('');
 
     try {
       await authService.register({
-        name: formData.name,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
+        name: currentData.name,
+        username: currentData.username,
+        email: currentData.email,
+        password: currentData.password,
       });
 
       // Callback o redirección por defecto
@@ -78,7 +91,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }
     } finally {
       setLoading(false);
     }
-  };
+  }, [onSuccess, router]);
+
+  // Exponer la función de submit a través del ref
+  useEffect(() => {
+    if (formRef) {
+      formRef.current = { submit: handleSubmit };
+    }
+  }, [formRef, handleSubmit]);
+
+  // Notificar cambios de loading
+  useEffect(() => {
+    if (onLoadingChange) {
+      onLoadingChange(loading);
+    }
+  }, [loading, onLoadingChange]);
 
   return (
     <form onSubmit={handleSubmit} className={`w-full flex flex-col gap-2 ${className}`}>
@@ -113,7 +140,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }
       />
 
       <PixelInput
-        label="Pass"
+        label="Contraseña"
         id="password"
         name="password"
         type="password"
@@ -123,7 +150,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }
       />
 
       <PixelInput
-        label="Confirm"
+        label="Confirmar Contraseña"
         id="confirmPassword"
         name="confirmPassword"
         type="password"
@@ -140,14 +167,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '' }
           </PixelText>
         </div>
       )}
-
-      {/* Submit Button */}
-      <SpriteButton
-        type="submit"
-        label={loading ? 'Creando...' : 'Crear Cuenta'}
-        disabled={loading}
-        className="w-full"
-      />
     </form>
   );
 };

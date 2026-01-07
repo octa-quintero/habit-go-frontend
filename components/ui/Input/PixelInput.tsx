@@ -34,8 +34,8 @@ const PixelInput: React.FC<PixelInputProps> = ({
   label,
   id,
   name,
-  labelWidth = 'w-16',
-  labelSize = 'text-[0.45rem]',
+  labelWidth = 'w-40',
+  labelSize = 'text-[0.70rem]',
   containerClassName = '',
   className = '',
   ...props
@@ -44,14 +44,14 @@ const PixelInput: React.FC<PixelInputProps> = ({
     <div className={`flex flex-row items-center gap-2 ${containerClassName}`}>
       <label 
         htmlFor={id} 
-        className={`font-press-start ${labelSize} text-gray-700 ${labelWidth} shrink-0`}
+        className={`font-press-start ${labelSize} text-black ${labelWidth} shrink-0`}
       >
         {label}
       </label>
       <input
         id={id}
         name={name}
-        className={`flex-1 px-2 py-1 font-press-start text-[0.5rem] text-black bg-white/40 focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
+        className={`flex-1 px-2 py-1 font-press-start text-[0.6rem] text-black bg-white/40 focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
         {...props}
       />
     </div>

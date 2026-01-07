@@ -56,7 +56,7 @@ const PixelText: React.FC<PixelTextProps> = ({
   size = 'base',
   color = 'text-black',
   opacity = 1,
-  align = 'left',
+  align = 'right',
   maxWidth,
   fontWeight,
   className = '',
