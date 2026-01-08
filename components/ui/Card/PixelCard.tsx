@@ -15,8 +15,10 @@ const PixelCard: React.FC<PixelCardProps> = ({
 }) => {
   return (
     <div 
-      className={`relative w-[90vw] sm:w-[80vw] md:w-[95vw] lg:w-[60vw] max-w-[900px] mx-auto ${className}`}
+      className={`relative mx-auto ${className}`}
       style={{
+        width: '900px',
+        maxWidth: '90vw',
         aspectRatio: '900 / 700',
       }}
     >

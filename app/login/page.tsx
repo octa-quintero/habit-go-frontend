@@ -4,14 +4,14 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
 import PixelText from '../../components/ui/Text/PixelText';
-import RegisterForm from '../../components/features/Auth/RegisterForm';
+import LoginForm from '../../components/features/Auth/LoginForm';
 import AuthLayout from '../../components/layouts/AuthLayout';
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const formRef = useRef<{ submit: () => void } | null>(null);
 
-  const handleCreateAccount = () => {
+  const handleLogin = () => {
     if (formRef.current) {
       formRef.current.submit();
     }
@@ -19,14 +19,14 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      title="Registrarse"
+      title="Iniciar Sesión"
       bottomContent={
         <div className="space-y-6">
           <div className="w-full flex flex-col sm:flex-row gap-2">
             <SpriteButton
-              label={loading ? 'Creando...' : 'Crear Cuenta'}
+              label={loading ? 'Ingresando...' : 'Iniciar Sesión'}
               disabled={loading}
-              onClick={handleCreateAccount}
+              onClick={handleLogin}
               className="w-full sm:flex-1"
             />
             <SpriteButton
@@ -47,18 +47,18 @@ export default function RegisterPage() {
           </div>
 
           <PixelText size="xs" color="text-gray-600" align="center">
-            ¿Ya tienes cuenta?{' '}
+            ¿No tienes cuenta?{' '}
             <Link 
-              href="/login" 
+              href="/register" 
               className="text-black font-bold hover:text-primary hover:underline transition-all duration-200 hover:scale-105 inline-block"
             >
-              Inicia Sesión
+              Regístrate
             </Link>
           </PixelText>
         </div>
       }
     >
-      <RegisterForm 
+      <LoginForm 
         formRef={formRef}
         onLoadingChange={setLoading}
       />
