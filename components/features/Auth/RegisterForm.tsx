@@ -29,6 +29,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', 
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const formDataRef = useRef(formData);
 
@@ -44,6 +45,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', 
     });
     if (error) {
       setError('');
+    }
+    if (success) {
+      setSuccess('');
     }
   };
 
@@ -70,6 +74,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', 
 
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       await authService.register({
@@ -79,14 +84,24 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', 
         password: currentData.password,
       });
 
-      // Callback o redirección por defecto
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/login?registered=true');
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al registrarse. Intenta de nuevo.';
+      setSuccess('¡Cuenta creada exitosamente! Redirigiendo...');
+      
+      // Esperar 1.5 segundos antes de redirigir
+      setTimeout(() => {
+        // Callback o redirección por defecto
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push('/login?registered=true');
+        }
+      }, 1500);
+    } catch (err: any) {
+      console.error('Error completo de registro:', err);
+      console.error('Respuesta del backend:', err.response?.data);
+      
+      // Extraer mensaje de error del backend
+      const backendMessage = err.response?.data?.message;
+      const errorMessage = backendMessage || err.message || 'Error al registrarse. Intenta de nuevo.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -164,6 +179,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, className = '', 
         <div className="px-2 py-1 bg-red-100 border-2 border-red-500">
           <PixelText size="xs" color="text-red-700" align="center">
             {error}
+          </PixelText>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {success && (
+        <div className="px-2 py-1 bg-green-100 border-2 border-green-500">
+          <PixelText size="xs" color="text-green-700" align="center">
+            {success}
           </PixelText>
         </div>
       )}

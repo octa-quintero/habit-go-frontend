@@ -9,8 +9,11 @@ export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const { data } = await api.post<LoginResponse>('/auth/login', credentials);
     
-    if (data.accessToken && data.refreshToken) {
-      saveTokens(data.accessToken, data.refreshToken);
+    // Guardar accessToken siempre que exista
+    if (data.accessToken) {
+      // Si hay refreshToken, guardarlo; sino usar el accessToken como fallback
+      const refreshToken = data.refreshToken || data.accessToken;
+      saveTokens(data.accessToken, refreshToken);
       saveUser(data.userData);
     }
     

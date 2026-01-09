@@ -27,6 +27,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
     rememberMe: false,
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const formDataRef = useRef(formData);
 
@@ -44,6 +45,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
     if (error) {
       setError('');
     }
+    if (success) {
+      setSuccess('');
+    }
   };
 
   const handleSubmit = useCallback(async (e?: React.FormEvent | null) => {
@@ -59,27 +63,45 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
 
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      // El backend espera email, pero aceptaremos username también
-      await authService.login({
-        email: currentData.username,
+      // Preparar datos para enviar
+      const loginPayload = {
+        email: currentData.username.trim(),
         password: currentData.password,
-      });
+      };
+      
+      // El backend espera email, pero aceptaremos username también
+      const response = await authService.login(loginPayload);
 
       // TODO: Implementar lógica de "Recuérdame" con localStorage
       if (currentData.rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
 
-      // Callback o redirección por defecto
-      if (onSuccess) {
-        onSuccess();
+      setSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
+      
+      // Esperar 1.5 segundos antes de redirigir
+      setTimeout(() => {
+        // Callback o redirección por defecto
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push('/dashboard');
+        }
+      }, 1500);
+    } catch (err: any) {
+      const backendMessage = err.response?.data?.message;
+      
+      // Si message es un array, tomar el primer elemento o unir todos
+      let errorMessage: string;
+      if (Array.isArray(backendMessage)) {
+        errorMessage = backendMessage.join(', ') || 'Error al iniciar sesión. Verifica tus credenciales.';
       } else {
-        router.push('/dashboard');
+        errorMessage = backendMessage || err.message || 'Error al iniciar sesión. Verifica tus credenciales.';
       }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión. Verifica tus credenciales.';
+      
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -157,6 +179,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
         <div className="px-2 py-1 bg-red-100 border-2 border-red-500">
           <PixelText size="xs" color="text-red-700" align="center">
             {error}
+          </PixelText>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {success && (
+        <div className="px-2 py-1 bg-green-100 border-2 border-green-500">
+          <PixelText size="xs" color="text-green-700" align="center">
+            {success}
           </PixelText>
         </div>
       )}
