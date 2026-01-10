@@ -1,0 +1,44 @@
+import React from 'react';
+
+interface PlantSpriteProps {
+  flowerNumber: number; // 1-15
+  stage: number; // 1-7 (según crecimiento)
+  size?: number;
+}
+
+export const PlantSprite: React.FC<PlantSpriteProps> = ({ 
+  flowerNumber, 
+  stage,
+  size = 80 
+}) => {
+  // Asegurar que flowerNumber esté entre 1-15
+  const flower = Math.max(1, Math.min(15, flowerNumber));
+  const imagePath = `/flower/flower${flower}/${stage}.png`;
+  
+  console.log('[PlantSprite]', { flowerNumber, flower, stage, imagePath });
+  
+  return (
+    <div 
+      className="flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <img
+        src={imagePath}
+        alt={`Planta etapa ${stage}`}
+        style={{ 
+          imageRendering: 'pixelated',
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain'
+        }}
+        onError={(e) => {
+          console.error('[PlantSprite] Error loading:', imagePath);
+          // Si no existe la imagen, intentar con la anterior
+          if (stage > 1) {
+            e.currentTarget.src = `/flower/flower${flower}/${stage - 1}.png`;
+          }
+        }}
+      />
+    </div>
+  );
+};

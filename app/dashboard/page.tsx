@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import PixelCard from '../../components/ui/Card/PixelCard';
 import PixelText from '../../components/ui/Text/PixelText';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
+import { PlantSprite } from '@/components/ui/Plant';
 import { habitsService } from '@/lib/api/habitsService';
 import { getUser, clearAuth } from '@/lib/auth';
 import type { Habit } from '@/types/api';
@@ -31,10 +32,14 @@ export default function DashboardPage() {
   const loadHabits = async () => {
     try {
       setLoading(true);
+      setError(''); // Limpiar errores anteriores
       const data = await habitsService.getAll();
+      console.log('[Dashboard] Habits loaded:', data.map(h => ({ id: h.id, title: h.title, streak: h.streak })));
       setHabits(data);
     } catch (err: any) {
-      console.error('Error al cargar hábitos:', err);
+      console.error('Error completo al cargar hábitos:', err);
+      console.error('Response:', err.response);
+      console.error('Message:', err.message);
       
       // Si el error es de autenticación, redirigir a login
       if (err.response?.status === 401) {
@@ -56,12 +61,27 @@ export default function DashboardPage() {
 
   const handleMarkComplete = async (habitId: string) => {
     try {
-      await habitsService.markAsCompleted(habitId);
-      // Recargar hábitos para actualizar streaks
-      await loadHabits();
-    } catch (err) {
+      const result = await habitsService.markAsCompleted(habitId);
+      
+      // Verificar si ya estaba completado
+      if (result.alreadyCompleted) {
+        setError('Ya completaste el hábito hoy ✓');
+        setTimeout(() => setError(''), 2000);
+        return;
+      }
+      
+      // Recargar hábitos inmediatamente para actualizar streaks y plantas
+      // Forzar recarga completa sin caché
+      setTimeout(async () => {
+        await loadHabits();
+      }, 100);
+    } catch (err: any) {
       console.error('Error al marcar hábito:', err);
-      setError('Error al marcar como completado');
+      const errorMessage = err.response?.data?.message || 'Error al marcar como completado';
+      setError(errorMessage);
+      
+      // Limpiar el error después de 3 segundos
+      setTimeout(() => setError(''), 3000);
     }
   };
 
@@ -69,11 +89,33 @@ export default function DashboardPage() {
   const totalStreak = activeHabits.reduce((sum, h) => sum + (h.streak || 0), 0);
   const longestStreak = Math.max(...activeHabits.map(h => h.longestStreak || 0), 0);
 
+  // Dividir hábitos: primeros 3 en la card principal, resto en grupos de 3
+  const firstThreeHabits = activeHabits.slice(0, 3);
+  const remainingHabits = activeHabits.slice(3);
+  
+  const habitsPerCard = 3;
+  const remainingHabitGroups: Habit[][] = [];
+  for (let i = 0; i < remainingHabits.length; i += habitsPerCard) {
+    remainingHabitGroups.push(remainingHabits.slice(i, i + habitsPerCard));
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <PixelCard gap="gap-0">
-        <div className="flex flex-col h-full py-6 px-4 gap-6">
-          {/* Header */}
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
+      {/* Header Card con background card 1 */}
+      <div 
+        className="relative mx-auto"
+        style={{
+          width: '900px',
+          maxWidth: '90vw',
+          aspectRatio: '900 / 350',
+          backgroundImage: 'url(/card/card%201.png)',
+          backgroundSize: '100% 100%',
+          backgroundRepeat: 'no-repeat',
+          imageRendering: 'pixelated',
+        }}
+      >
+        <div className="flex flex-col gap-6 h-full justify-center" style={{ padding: '8% 10%', width: '100%' }}>
+          {/* Fila superior: Logo + Nombre + Botón Salir */}
           <div className="flex flex-row items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <span className="relative flex items-center justify-center" style={{ minWidth: '3rem', minHeight: '3rem' }}>
@@ -94,44 +136,81 @@ export default function DashboardPage() {
                 <PixelText size="lg" color="text-gray-900" fontWeight={700}>
                   {user?.name || 'Usuario'}
                 </PixelText>
-                <PixelText size="xs" color="text-gray-600">
+                <PixelText size="xs" color="text-gray-900">
                   @{user?.username}
                 </PixelText>
               </div>
             </div>
             
-            <SpriteButton
-              label="Salir"
-              variant="black"
-              onClick={handleLogout}
-              className="px-4"
-            />
+            <div className="flex-shrink-0">
+              <SpriteButton
+                label="Salir"
+                variant="black"
+                onClick={handleLogout}
+                className="px-0"
+                minWidth={120}
+                maxWidth={120}
+              />
+            </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white border-2 border-black p-3 flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-600">Hábitos</PixelText>
-              <PixelText size="2xl" color="text-primary" fontWeight={700}>
+          {/* Stats: Hábitos, Racha Total, Mejor Racha */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex flex-col items-center">
+              <PixelText size="xs" color="text-gray-900">Hábitos</PixelText>
+              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
                 {activeHabits.length}
               </PixelText>
             </div>
-            <div className="bg-white border-2 border-black p-3 flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-600">Racha Total</PixelText>
-              <PixelText size="2xl" color="text-primary" fontWeight={700}>
+            <div className="flex flex-col items-center">
+              <PixelText size="xs" color="text-gray-900">Racha Total</PixelText>
+              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
                 {totalStreak}
               </PixelText>
             </div>
-            <div className="bg-white border-2 border-black p-3 flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-600">Mejor Racha</PixelText>
-              <PixelText size="2xl" color="text-primary" fontWeight={700}>
+            <div className="flex flex-col items-center">
+              <PixelText size="xs" color="text-gray-900">Mejor Racha</PixelText>
+              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
                 {longestStreak}
               </PixelText>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Habits List */}
-          <div className="flex-1 overflow-y-auto">
+      {/* Habits Cards */}
+      {loading ? (
+        <PixelCard>
+          <div className="py-6 px-4">
+            <PixelText size="sm" color="text-gray-900" align="center">
+              Cargando...
+            </PixelText>
+          </div>
+        </PixelCard>
+      ) : error ? (
+        <PixelCard>
+          <div className="py-6 px-4">
+            <div className={`px-2 py-1 border-2 ${
+              error.includes('Ya completaste') 
+                ? 'bg-green-100 border-green-500' 
+                : 'bg-red-100 border-red-500'
+            }`}>
+              <PixelText 
+                size="xs" 
+                color={error.includes('Ya completaste') ? 'text-green-700' : 'text-red-700'} 
+                align="center"
+              >
+                {error}
+              </PixelText>
+            </div>
+          </div>
+        </PixelCard>
+      ) : null}
+
+      {/* Primera Card con Header y primeros 2 hábitos */}
+      {!loading && (
+        <PixelCard gap="gap-0">
+          <div className="w-full h-full flex flex-col justify-start pt-6 pb-6 px-4">
             <div className="flex items-center justify-between mb-3">
               <PixelText size="base" color="text-gray-900" fontWeight={700}>
                 Mis Hábitos
@@ -143,50 +222,133 @@ export default function DashboardPage() {
               />
             </div>
 
-            {loading ? (
-              <PixelText size="sm" color="text-gray-600" align="center">
-                Cargando...
-              </PixelText>
-            ) : error ? (
-              <div className="px-2 py-1 bg-red-100 border-2 border-red-500">
-                <PixelText size="xs" color="text-red-700" align="center">
-                  {error}
-                </PixelText>
-              </div>
-            ) : activeHabits.length === 0 ? (
+            {activeHabits.length === 0 ? (
               <div className="text-center py-8">
-                <PixelText size="sm" color="text-gray-600">
+                <PixelText size="sm" color="text-gray-900">
                   No tienes hábitos aún
                 </PixelText>
-                <PixelText size="xs" color="text-gray-500" className="mt-2">
+                <PixelText size="xs" color="text-gray-900" className="mt-2">
                   ¡Crea tu primer hábito para comenzar!
                 </PixelText>
               </div>
             ) : (
               <div className="space-y-2">
-                {activeHabits.map((habit) => (
+                {firstThreeHabits.map((habit) => {
+                  const maxStage = 7;
+                  const currentStage = Math.min(habit.streak + 1, maxStage);
+                  
+                  console.log('[Dashboard] Habit:', { 
+                    id: habit.id, 
+                    title: habit.title, 
+                    streak: habit.streak, 
+                    currentStage 
+                  });
+                  
+                  return (
+                    <div
+                      key={`${habit.id}-${habit.streak}`}
+                      className="p-3 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-shrink-0">
+                          <PlantSprite 
+                            flowerNumber={habit.plantNumber}
+                            stage={currentStage}
+                            size={64}
+                            key={`plant-${habit.id}-${currentStage}`}
+                          />
+                        </div>
+                        
+                        <div className="flex-1">
+                          <PixelText size="sm" color="text-gray-900" fontWeight={700}>
+                            {habit.title}
+                          </PixelText>
+                          {habit.description && (
+                            <PixelText size="xs" color="text-gray-900" className="mt-1">
+                              {habit.description}
+                            </PixelText>
+                          )}
+                          <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs">🔥</span>
+                              <PixelText size="xs" color="text-gray-900" fontWeight={700}>
+                                {habit.streak || 0} días
+                              </PixelText>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs">🌱</span>
+                              <PixelText size="xs" color="text-gray-900" fontWeight={700}>
+                                Etapa {currentStage}/{maxStage}
+                              </PixelText>
+                            </div>
+                            <PixelText size="xs" color="text-gray-900">
+                              {habit.frequency === 'daily' ? 'Diario' : 'Semanal'}
+                            </PixelText>
+                          </div>
+                        </div>
+                        
+                        <SpriteButton
+                          label="✓"
+                          onClick={() => handleMarkComplete(habit.id)}
+                          className="px-3 min-w-[60px]"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </PixelCard>
+      )}
+
+      {/* Cards adicionales para hábitos restantes (grupos de 2) */}
+      {!loading && remainingHabitGroups.map((group, groupIndex) => (
+        <PixelCard key={`habit-group-${groupIndex}`} gap="gap-0">
+          <div className="w-full h-full flex flex-col justify-start py-6 px-4">
+            <div className="space-y-2">
+              {group.map((habit) => {
+                const maxStage = 7;
+                const currentStage = Math.min(habit.streak + 1, maxStage);
+                
+                return (
                   <div
-                    key={habit.id}
-                    className="bg-white border-2 border-black p-3 hover:bg-gray-50 transition-colors"
+                    key={`${habit.id}-${habit.streak}`}
+                    className="p-3 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">
+                      <div className="flex-shrink-0">
+                        <PlantSprite 
+                          flowerNumber={habit.plantNumber}
+                          stage={currentStage}
+                          size={64}
+                          key={`plant-${habit.id}-${currentStage}`}
+                        />
+                      </div>
+                      
                       <div className="flex-1">
                         <PixelText size="sm" color="text-gray-900" fontWeight={700}>
                           {habit.title}
                         </PixelText>
                         {habit.description && (
-                          <PixelText size="xs" color="text-gray-600" className="mt-1">
+                          <PixelText size="xs" color="text-gray-900" className="mt-1">
                             {habit.description}
                           </PixelText>
                         )}
                         <div className="flex items-center gap-3 mt-2">
                           <div className="flex items-center gap-1">
                             <span className="text-xs">🔥</span>
-                            <PixelText size="xs" color="text-primary" fontWeight={700}>
+                            <PixelText size="xs" color="text-gray-900" fontWeight={700}>
                               {habit.streak || 0} días
                             </PixelText>
                           </div>
-                          <PixelText size="xs" color="text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs">🌱</span>
+                            <PixelText size="xs" color="text-gray-900" fontWeight={700}>
+                              Etapa {currentStage}/{maxStage}
+                            </PixelText>
+                          </div>
+                          <PixelText size="xs" color="text-gray-900">
                             {habit.frequency === 'daily' ? 'Diario' : 'Semanal'}
                           </PixelText>
                         </div>
@@ -196,15 +358,15 @@ export default function DashboardPage() {
                         label="✓"
                         onClick={() => handleMarkComplete(habit.id)}
                         className="px-3 min-w-[60px]"
-                      />
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            )}
-          </div>
-        </div>
-      </PixelCard>
-    </div>
-  );
-}
+            </div>
+          </PixelCard>
+        ))}
+      </div>
+    );
+  }

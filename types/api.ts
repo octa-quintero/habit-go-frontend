@@ -109,6 +109,7 @@ export interface Habit {
   streak: number;
   longestStreak: number;
   lastCompletedDate?: string;
+  plantNumber: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
