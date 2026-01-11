@@ -186,11 +186,16 @@ export enum RewardType {
 
 /** Reward Tier/Rarity Enum */
 export enum RewardTier {
-  COMMON = 'COMMON',
-  UNCOMMON = 'UNCOMMON',
-  RARE = 'RARE',
-  EPIC = 'EPIC',
-  LEGENDARY = 'LEGENDARY',
+  STARTER = 'starter',
+  COMMON = 'common',
+  UNCOMMON = 'uncommon',
+  RARE = 'rare',
+  RARE_PLUS = 'rare_plus',
+  EPIC = 'epic',
+  EPIC_PLUS = 'epic_plus',
+  LEGENDARY = 'legendary',
+  MYTHIC = 'mythic',
+  ULTIMATE = 'ultimate',
 }
 
 /** Reward Entity */

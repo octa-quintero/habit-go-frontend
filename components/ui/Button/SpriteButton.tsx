@@ -155,7 +155,7 @@ const SpriteButton: React.FC<SpriteButtonProps> = ({
 
   // Clases CSS memoizadas
   const contentClasses = useMemo(() => 
-    `relative z-10 flex ${iconPosition === 'right' ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 w-full h-full justify-center font-press-start ${config.textSize} ${config.textColor} px-2 text-center overflow-hidden max-w-full transition-all duration-100 group-active:opacity-60 group-active:translate-y-0.5`,
+    `relative z-10 flex ${iconPosition === 'right' ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 w-full h-full justify-center font-press-start ${config.textSize} ${config.textColor} text-center overflow-hidden max-w-full transition-all duration-100 group-active:opacity-60 group-active:translate-y-0.5 pointer-events-none`,
     [iconPosition, config.textSize, config.textColor]
   );
 

@@ -6,7 +6,7 @@ export const rewardsService = {
    * Obtener todas las recompensas disponibles
    */
   async getAll(): Promise<Reward[]> {
-    const { data } = await api.get<Reward[]>('/reward');
+    const { data } = await api.get<Reward[]>('/rewards');
     return data;
   },
 
@@ -14,7 +14,7 @@ export const rewardsService = {
    * Obtener recompensas del usuario
    */
   async getUserRewards(): Promise<UserReward[]> {
-    const { data } = await api.get<UserReward[]>('/reward/user');
+    const { data } = await api.get<UserReward[]>('/rewards/user');
     return data;
   },
 
@@ -22,7 +22,7 @@ export const rewardsService = {
    * Reclamar una recompensa
    */
   async claimReward(rewardId: string): Promise<UserReward> {
-    const { data } = await api.post<UserReward>(`/reward/${rewardId}/claim`, {});
+    const { data } = await api.post<UserReward>(`/rewards/${rewardId}/claim`, {});
     return data;
   },
 
@@ -31,14 +31,14 @@ export const rewardsService = {
    */
   async markAsViewed(rewardIds: string[]): Promise<void> {
     const payload: MarkViewedDto = { rewardIds };
-    await api.post('/reward/viewed', payload);
+    await api.post('/rewards/mark-viewed', payload);
   },
 
   /**
    * Obtener una recompensa específica
    */
   async getById(rewardId: string): Promise<Reward> {
-    const { data } = await api.get<Reward>(`/reward/${rewardId}`);
+    const { data } = await api.get<Reward>(`/rewards/${rewardId}`);
     return data;
   },
 };

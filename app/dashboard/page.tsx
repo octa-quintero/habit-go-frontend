@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation';
 import PixelCard from '../../components/ui/Card/PixelCard';
 import PixelText from '../../components/ui/Text/PixelText';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
+import SmallButton from '../../components/ui/Button/SmallButton';
+import DeleteButton from '../../components/ui/Button/DeleteButton';
 import { PlantSprite } from '@/components/ui/Plant';
+import { FireIcon, PlantIcon } from '@/components/ui/Icons/PixelIcons';
 import { habitsService } from '@/lib/api/habitsService';
 import { getUser, clearAuth } from '@/lib/auth';
 import type { Habit } from '@/types/api';
@@ -85,6 +88,23 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDeleteHabit = async (habitId: string) => {
+    if (!confirm('¿Estás seguro de que quieres eliminar este hábito?')) {
+      return;
+    }
+    
+    try {
+      await habitsService.delete(habitId);
+      // Recargar hábitos después de eliminar
+      await loadHabits();
+    } catch (err: any) {
+      console.error('Error al eliminar hábito:', err);
+      const errorMessage = err.response?.data?.message || 'Error al eliminar el hábito';
+      setError(errorMessage);
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
   const activeHabits = habits.filter(h => h.isActive);
   const totalStreak = activeHabits.reduce((sum, h) => sum + (h.streak || 0), 0);
   const longestStreak = Math.max(...activeHabits.map(h => h.longestStreak || 0), 0);
@@ -142,7 +162,15 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            <div className="flex-shrink-0">
+            <div className="flex gap-2">
+              <SpriteButton
+                label="Recompensas"
+                variant="white"
+                onClick={() => router.push('/rewards')}
+                className="px-0"
+                minWidth={140}
+                maxWidth={140}
+              />
               <SpriteButton
                 label="Salir"
                 variant="black"
@@ -212,13 +240,22 @@ export default function DashboardPage() {
         <PixelCard gap="gap-0">
           <div className="w-full h-full flex flex-col justify-start pt-6 pb-6 px-4">
             <div className="flex items-center justify-between mb-3">
-              <PixelText size="base" color="text-gray-900" fontWeight={700}>
-                Mis Hábitos
-              </PixelText>
+              <div className="flex items-center gap-2">
+                <PixelText size="base" color="text-gray-900" fontWeight={700}>
+                  Mis Hábitos
+                </PixelText>
+                <img 
+                  src="/chicken/chicken.gif" 
+                  alt="chicken" 
+                  style={{ width: '56px', height: '56px', imageRendering: 'pixelated' }}
+                />
+              </div>
               <SpriteButton
                 label="+ Nuevo"
                 onClick={() => router.push('/habits/create')}
-                className="px-3"
+                className="px-0"
+                minWidth={120}
+                maxWidth={120}
               />
             </div>
 
@@ -259,39 +296,61 @@ export default function DashboardPage() {
                           />
                         </div>
                         
-                        <div className="flex-1">
-                          <PixelText size="sm" color="text-gray-900" fontWeight={700}>
-                            {habit.title}
-                          </PixelText>
-                          {habit.description && (
-                            <PixelText size="xs" color="text-gray-900" className="mt-1">
-                              {habit.description}
-                            </PixelText>
-                          )}
-                          <div className="flex items-center gap-3 mt-2">
+                        <div className="flex-1 flex gap-3 items-start">
+                          <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-1">
-                              <span className="text-xs">🔥</span>
                               <PixelText size="xs" color="text-gray-900" fontWeight={700}>
                                 {habit.streak || 0} días
                               </PixelText>
+                              <img 
+                                src="/fire/Fire gif.gif" 
+                                alt="fire" 
+                                style={{ width: '24px', height: '24px', imageRendering: 'pixelated' }}
+                              />
                             </div>
                             <div className="flex items-center gap-1">
-                              <span className="text-xs">🌱</span>
+                              <PlantIcon size={12} color="#000000" />
                               <PixelText size="xs" color="text-gray-900" fontWeight={700}>
                                 Etapa {currentStage}/{maxStage}
                               </PixelText>
                             </div>
-                            <PixelText size="xs" color="text-gray-900">
-                              {habit.frequency === 'daily' ? 'Diario' : 'Semanal'}
+                            <div className="flex items-center gap-1">
+                              <div style={{
+                                backgroundColor: habit.frequency === 'daily' ? '#FEF3C7' : '#DBEAFE',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                border: `1px solid ${habit.frequency === 'daily' ? '#FCD34D' : '#93C5FD'}`
+                              }}>
+                                <PixelText size="xs" color={habit.frequency === 'daily' ? 'text-yellow-900' : 'text-blue-900'} fontWeight={700}>
+                                  {habit.frequency === 'daily' ? '⏰ Diario' : '📅 Semanal'}
+                                </PixelText>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1">
+                            <PixelText size="sm" color="text-gray-900" fontWeight={700}>
+                              {habit.title}
                             </PixelText>
+                            {habit.description && (
+                              <PixelText size="xs" color="text-gray-900" className="mt-1">
+                                {habit.description}
+                              </PixelText>
+                            )}
                           </div>
                         </div>
                         
-                        <SpriteButton
-                          label="✓"
-                          onClick={() => handleMarkComplete(habit.id)}
-                          className="px-3 min-w-[60px]"
-                        />
+                        <div className="flex gap-2">
+                          <SmallButton
+                            label="✓"
+                            onClick={() => handleMarkComplete(habit.id)}
+                            className="w-[60px] h-[60px]"
+                          />
+                          <DeleteButton
+                            onClick={() => handleDeleteHabit(habit.id)}
+                            className="w-[60px] h-[60px]"
+                          />
+                        </div>
                       </div>
                     </div>
                   );
@@ -326,39 +385,61 @@ export default function DashboardPage() {
                         />
                       </div>
                       
-                      <div className="flex-1">
-                        <PixelText size="sm" color="text-gray-900" fontWeight={700}>
-                          {habit.title}
-                        </PixelText>
-                        {habit.description && (
-                          <PixelText size="xs" color="text-gray-900" className="mt-1">
-                            {habit.description}
-                          </PixelText>
-                        )}
-                        <div className="flex items-center gap-3 mt-2">
+                      <div className="flex-1 flex gap-3 items-start">
+                        <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1">
-                            <span className="text-xs">🔥</span>
                             <PixelText size="xs" color="text-gray-900" fontWeight={700}>
                               {habit.streak || 0} días
                             </PixelText>
+                            <img 
+                              src="/fire/Fire gif.gif" 
+                              alt="fire" 
+                              style={{ width: '24px', height: '24px', imageRendering: 'pixelated' }}
+                            />
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="text-xs">🌱</span>
+                            <PlantIcon size={12} color="#000000" />
                             <PixelText size="xs" color="text-gray-900" fontWeight={700}>
                               Etapa {currentStage}/{maxStage}
                             </PixelText>
                           </div>
-                          <PixelText size="xs" color="text-gray-900">
-                            {habit.frequency === 'daily' ? 'Diario' : 'Semanal'}
+                          <div className="flex items-center gap-1">
+                            <div style={{
+                              backgroundColor: habit.frequency === 'daily' ? '#FEF3C7' : '#DBEAFE',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              border: `1px solid ${habit.frequency === 'daily' ? '#FCD34D' : '#93C5FD'}`
+                            }}>
+                              <PixelText size="xs" color={habit.frequency === 'daily' ? 'text-yellow-900' : 'text-blue-900'} fontWeight={700}>
+                                {habit.frequency === 'daily' ? '⏰ Diario' : '📅 Semanal'}
+                              </PixelText>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1">
+                          <PixelText size="sm" color="text-gray-900" fontWeight={700}>
+                            {habit.title}
                           </PixelText>
+                          {habit.description && (
+                            <PixelText size="xs" color="text-gray-900" className="mt-1">
+                              {habit.description}
+                            </PixelText>
+                          )}
                         </div>
                       </div>
                       
-                      <SpriteButton
-                        label="✓"
-                        onClick={() => handleMarkComplete(habit.id)}
-                        className="px-3 min-w-[60px]"
+                      <div className="flex gap-2">
+                        <SmallButton
+                          label="✓"
+                          onClick={() => handleMarkComplete(habit.id)}
+                          className="w-[60px] h-[60px]"
                         />
+                        <DeleteButton
+                          onClick={() => handleDeleteHabit(habit.id)}
+                          className="w-[60px] h-[60px]"
+                        />
+                      </div>
                       </div>
                     </div>
                   );
