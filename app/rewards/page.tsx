@@ -46,6 +46,13 @@ export default function RewardsPage() {
         })
       ]);
       
+      console.log('📊 Recompensas cargadas:', { 
+        totalRewards: rewards.length, 
+        unlockedRewards: unlocked.length,
+        rewards,
+        unlocked
+      });
+      
       setAllRewards(rewards);
       setUserRewards(unlocked);
       
@@ -80,7 +87,21 @@ export default function RewardsPage() {
 
   // Verificar si una recompensa está desbloqueada
   const isUnlocked = (rewardId: string): boolean => {
-    return userRewards.some(ur => ur.rewardId === rewardId);
+    return userRewards.some(ur => ur.id === rewardId);
+  };
+
+  // Obtener el contador de veces que se obtuvo una gema
+  const getRewardCount = (rewardId: string): number => {
+    const reward = userRewards.find(ur => ur.id === rewardId);
+    return reward?.count || 0;
+  };
+
+  // Contar cuántas gemas desbloqueadas hay por tier
+  const getUnlockedCountByTier = (tier: GemTier): number => {
+    return allRewards.filter(r => {
+      const rewardTier = getTierFromReward(r);
+      return rewardTier === tier && isUnlocked(r.id);
+    }).length;
   };
 
   // Agrupar recompensas por tier
@@ -190,73 +211,122 @@ export default function RewardsPage() {
                   
                   return (
                     <div key={tier} className="space-y-3">
-                      {/* Tier Header */}
-                      <div className="flex items-center gap-3">
-                        <GemSprite tier={tier} size={32} />
-                        <PixelText size="base" color="text-gray-900" fontWeight={700}>
+                      {/* Tier Header con contador de gemas */}
+                      <div className="flex items-center gap-3 px-2">
+                        <div className="relative">
+                          <GemSprite tier={tier} size={28} />
+                          {/* Contador de gemas acumuladas */}
+                          {getUnlockedCountByTier(tier) > 0 && (
+                            <div className="absolute -top-1 -right-1 bg-gray-900 text-white rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                              <PixelText size="xs" color="text-white" fontWeight={700}>
+                                {getUnlockedCountByTier(tier)}
+                              </PixelText>
+                            </div>
+                          )}
+                        </div>
+                        <PixelText size="sm" color="text-gray-900" fontWeight={700}>
                           {config.name}
                         </PixelText>
                         <div className="flex-1 h-0.5 bg-gray-300"></div>
+                        <PixelText size="xs" color="text-gray-500">
+                          {rewards.filter(r => isUnlocked(r.id)).length}/{rewards.length}
+                        </PixelText>
                       </div>
 
-                      {/* Rewards Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {/* Rewards Grid - Cards estilo pixel art */}
+                      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {rewards.map(reward => {
                           const unlocked = isUnlocked(reward.id);
+                          const count = getRewardCount(reward.id);
                           
                           return (
                             <div
                               key={reward.id}
-                              className={`p-4 border-2 rounded-lg transition-all ${
-                                unlocked
-                                  ? 'border-gray-900 bg-white'
-                                  : 'border-gray-400 bg-gray-100 opacity-60'
-                              }`}
+                              className="relative"
                             >
-                              <div className="flex flex-col items-center gap-2">
-                                {/* Gema */}
-                                <div className={unlocked ? '' : 'grayscale'}>
-                                  <GemSprite 
-                                    tier={getTierFromReward(reward)} 
-                                    size={48}
-                                    animated={unlocked}
-                                  />
-                                </div>
+                              {/* Card con gema */}
+                              <div
+                                className={`relative transition-all ${
+                                  unlocked
+                                    ? 'hover:scale-105'
+                                    : 'opacity-60'
+                                }`}
+                                style={{
+                                  imageRendering: 'pixelated',
+                                  height: '140px', // Altura fija
+                                }}
+                              >
+                                {/* Fondo estilo pixel card */}
+                                <div 
+                                  className={`absolute inset-0 ${
+                                    unlocked ? 'bg-amber-100' : 'bg-gray-300'
+                                  }`}
+                                  style={{
+                                    boxShadow: unlocked 
+                                      ? 'inset -4px -4px 0px rgba(0,0,0,0.2), inset 4px 4px 0px rgba(255,255,255,0.4)'
+                                      : 'inset -3px -3px 0px rgba(0,0,0,0.15), inset 3px 3px 0px rgba(255,255,255,0.3)',
+                                    border: unlocked ? '3px solid #1f2937' : '3px solid #6b7280',
+                                  }}
+                                />
 
-                                {/* Nombre */}
-                                <PixelText 
-                                  size="xs" 
-                                  color={unlocked ? 'text-gray-900' : 'text-gray-500'}
-                                  fontWeight={700}
-                                  className="text-center"
-                                >
-                                  {reward.name}
-                                </PixelText>
+                                <div className="relative z-10 flex flex-col items-center justify-between h-full py-2 px-2">
+                                  {/* Gema - Elemento Principal */}
+                                  <div className={`relative ${unlocked ? '' : 'grayscale'} flex-shrink-0`}>
+                                    <GemSprite 
+                                      tier={getTierFromReward(reward)} 
+                                      size={48}
+                                      variant={(reward.variant || 1) as 1 | 2 | 3}
+                                    />
+                                    {/* Badge contador x2, x3, etc. */}
+                                    {unlocked && count > 1 && (
+                                      <div 
+                                        className="absolute -top-1 -right-1 bg-gray-900 text-white rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1"
+                                        style={{
+                                          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                          border: '2px solid #ffffff',
+                                        }}
+                                      >
+                                        <PixelText size="xs" color="text-white" fontWeight={700}>
+                                          x{count}
+                                        </PixelText>
+                                      </div>
+                                    )}
+                                  </div>
 
-                                {/* Descripción */}
-                                <PixelText 
-                                  size="xs" 
-                                  color="text-gray-600"
-                                  className="text-center"
-                                >
-                                  {reward.description}
-                                </PixelText>
+                                  {/* Título dentro de la card - altura fija */}
+                                  <div className="w-full flex-shrink-0" style={{ height: '32px' }}>
+                                    <PixelText 
+                                      size="xs" 
+                                      color={unlocked ? 'text-gray-900' : 'text-gray-600'}
+                                      fontWeight={700}
+                                      className="text-center line-clamp-2"
+                                      style={{ lineHeight: '1.2', fontSize: '9px' }}
+                                    >
+                                      {reward.name}
+                                    </PixelText>
+                                  </div>
 
-                                {/* Requisito */}
-                                <div className={`px-2 py-1 rounded ${
-                                  unlocked ? 'bg-green-100' : 'bg-gray-200'
-                                }`}>
-                                  <PixelText 
-                                    size="xs" 
-                                    color={unlocked ? 'text-green-900' : 'text-gray-600'}
-                                    fontWeight={700}
-                                  >
-                                    {unlocked ? '✓ Desbloqueado' : `${reward.requirement} ${
-                                      reward.type === 'STREAK' ? 'días' :
-                                      reward.type === 'HABIT_COUNT' ? 'hábitos' :
-                                      'completaciones'
+                                  {/* Badge de requisito estilo pixel */}
+                                  <div 
+                                    className={`px-1 py-1 text-center w-full flex-shrink-0 flex items-center justify-center ${
+                                      unlocked ? 'bg-green-600' : 'bg-red-600'
                                     }`}
-                                  </PixelText>
+                                    style={{
+                                      boxShadow: 'inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.3)',
+                                      border: '2px solid rgba(0,0,0,0.2)',
+                                    }}
+                                  >
+                                    <div style={{ fontSize: '9px', lineHeight: '1', color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '3px', letterSpacing: '0.5px' }}>
+                                      {unlocked ? (
+                                        <>
+                                          <span style={{ fontSize: '12px' }}>✓</span>
+                                          <span style={{ fontWeight: '900' }}>COMPLETADO</span>
+                                        </>
+                                      ) : (
+                                        <span style={{ fontWeight: '900' }}>INCOMPLETO</span>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>

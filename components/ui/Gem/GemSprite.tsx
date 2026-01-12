@@ -1,91 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-// Configuración de gemas según el pack del creador
-// GEM 1 (18x30) es el más pequeño → STARTER
-// GEM CLUSTER 10 (44x44) es el más grande → ULTIMATE
+// Configuración de gemas con GIFs
+// Carpeta 1 = mayor valor (ULTIMATE)
+// Carpeta 10 = menor valor (STARTER)
+// Dentro de cada carpeta: 1.gif (mejor), 2.gif, 3.gif
 const GEM_CONFIG = {
-  ULTIMATE: { gemNumber: 10, size: { width: 44, height: 44 }, name: 'Ultimate', frames: 10, color: 'BLUE', isCluster: true },
-  MYTHIC: { gemNumber: 9, size: { width: 27, height: 26 }, name: 'Mítico', frames: 10, color: 'LILAC', isCluster: false },
-  LEGENDARY: { gemNumber: 8, size: { width: 26, height: 23 }, name: 'Legendario', frames: 10, color: 'LILAC', isCluster: false },
-  EPIC_PLUS: { gemNumber: 7, size: { width: 21, height: 25 }, name: 'Épico+', frames: 10, color: 'DARK BLUE', isCluster: false },
-  EPIC: { gemNumber: 6, size: { width: 24, height: 26 }, name: 'Épico', frames: 10, color: 'DARK BLUE', isCluster: false },
-  RARE_PLUS: { gemNumber: 5, size: { width: 19, height: 22 }, name: 'Raro+', frames: 10, color: 'BLUE', isCluster: false },
-  RARE: { gemNumber: 4, size: { width: 20, height: 30 }, name: 'Raro', frames: 10, color: 'BLUE', isCluster: false },
-  UNCOMMON: { gemNumber: 3, size: { width: 28, height: 28 }, name: 'Poco Común', frames: 10, color: 'BLUE', isCluster: false },
-  COMMON: { gemNumber: 2, size: { width: 23, height: 27 }, name: 'Común', frames: 10, color: 'BLUE', isCluster: false },
-  STARTER: { gemNumber: 1, size: { width: 18, height: 30 }, name: 'Inicial', frames: 10, color: 'BLUE', isCluster: false },
+  ULTIMATE: { folder: 1, size: { width: 44, height: 44 }, name: 'Ultimate' },
+  MYTHIC: { folder: 2, size: { width: 27, height: 26 }, name: 'Mítico' },
+  LEGENDARY: { folder: 3, size: { width: 26, height: 23 }, name: 'Legendario' },
+  EPIC_PLUS: { folder: 4, size: { width: 21, height: 25 }, name: 'Épico+' },
+  EPIC: { folder: 5, size: { width: 24, height: 26 }, name: 'Épico' },
+  RARE_PLUS: { folder: 6, size: { width: 19, height: 22 }, name: 'Raro+' },
+  RARE: { folder: 7, size: { width: 20, height: 30 }, name: 'Raro' },
+  UNCOMMON: { folder: 8, size: { width: 28, height: 28 }, name: 'Poco Común' },
+  COMMON: { folder: 9, size: { width: 23, height: 27 }, name: 'Común' },
+  STARTER: { folder: 10, size: { width: 18, height: 30 }, name: 'Inicial' },
 } as const;
 
 export type GemTier = keyof typeof GEM_CONFIG;
 
 interface GemSpriteProps {
   tier: GemTier;
-  size?: number; // Tamaño en píxeles (escala proporcional)
-  animated?: boolean; // Si debe animar
-  animationSpeed?: number; // Velocidad de animación en ms
+  size?: number; // Tamaño en píxeles (ancho, altura se escala proporcionalmente)
+  variant?: 1 | 2 | 3; // Qué GIF usar (1 = mejor calidad)
   className?: string;
 }
 
 export const GemSprite: React.FC<GemSpriteProps> = ({ 
   tier,
   size,
-  animated = true,
-  animationSpeed = 100,
+  variant = 1,
   className = ''
 }) => {
-  const [currentFrame, setCurrentFrame] = useState(0);
   const config = GEM_CONFIG[tier];
+  const imagePath = `/rewards/GEM ${config.folder}/${variant}.gif`;
   
-  // Animación DESACTIVADA temporalmente - esperando GIFs
-  /*
-  useEffect(() => {
-    if (!animated) return;
-    
-    const interval = setInterval(() => {
-      setCurrentFrame(prev => (prev + 1) % config.frames);
-    }, animationSpeed);
-    
-    return () => clearInterval(interval);
-  }, [animated, animationSpeed, config.frames]);
-  */
-  
-  // Construir la ruta según la estructura del creador
-  const folderName = config.gemNumber === 10 ? 'GEM 10' : `GEM ${config.gemNumber}`;
-  const fileName = config.isCluster
-    ? `GEM CLUSTER 10 - ${config.color} - Spritesheet.png`
-    : `GEM ${config.gemNumber} - ${config.color} - Spritesheet.png`;
-  // Codificar espacios para URL
-  const imagePath = `/rewards/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
-  
-  // Calcular el factor de escala
-  const scaleFactor = size ? size / config.size.width : 1;
-  
-  // Dimensiones del contenedor (display)
-  const displayWidth = config.size.width * scaleFactor;
-  const displayHeight = config.size.height * scaleFactor;
-  
-  // Dimensiones del sprite sheet completo (10 frames horizontales)
-  const totalSpriteWidth = config.size.width * config.frames;
-  const scaledSpriteWidth = totalSpriteWidth * scaleFactor;
-  const scaledSpriteHeight = config.size.height * scaleFactor;
-  
-  // Posición X del frame actual (negativa porque movemos el fondo a la izquierda)
-  const frameWidth = config.size.width * scaleFactor;
-  const backgroundPositionX = -(currentFrame * frameWidth);
+  // Calcular dimensiones
+  const displayWidth = size || config.size.width;
+  const displayHeight = size 
+    ? (size * config.size.height) / config.size.width 
+    : config.size.height;
   
   return (
-    <div 
+    <img
+      src={imagePath}
+      alt={`Gema ${config.name}`}
       className={`inline-block ${className}`}
       style={{ 
         width: `${displayWidth}px`, 
         height: `${displayHeight}px`,
-        backgroundImage: `url(${imagePath})`,
-        backgroundPosition: `${backgroundPositionX}px 0px`,
-        backgroundSize: `${scaledSpriteWidth}px ${scaledSpriteHeight}px`,
-        backgroundRepeat: 'no-repeat',
         imageRendering: 'pixelated',
       }}
-      title={`Gema ${config.name}`}
     />
   );
 };

@@ -207,11 +207,14 @@ export interface Reward {
   type: RewardType;
   tier: RewardTier;
   icon: string;
+  variant?: number; // 1, 2, 3 para diferentes versiones de gemas
   requirement: number;
   orderIndex: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  count?: number; // Contador de veces obtenida (desde getUserRewards)
+  earnedAt?: string; // Fecha de obtención (desde getUserRewards)
 }
 
 /** User's Unlocked Reward */
