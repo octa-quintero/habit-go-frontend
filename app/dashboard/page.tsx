@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PixelCard from '../../components/ui/Card/PixelCard';
+import HeaderCard from '../../components/ui/Card/HeaderCard';
 import PixelText from '../../components/ui/Text/PixelText';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
+import StatsBox from '../../components/ui/Card/StatsBox';
 import SmallButton from '../../components/ui/Button/SmallButton';
 import DeleteButton from '../../components/ui/Button/DeleteButton';
 import { PlantSprite } from '@/components/ui/Plant';
@@ -122,19 +124,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
       {/* Header Card con background card 1 */}
-      <div 
-        className="relative mx-auto"
-        style={{
-          width: '900px',
-          maxWidth: '90vw',
-          aspectRatio: '900 / 350',
-          backgroundImage: 'url(/card/card%201.png)',
-          backgroundSize: '100% 100%',
-          backgroundRepeat: 'no-repeat',
-          imageRendering: 'pixelated',
-        }}
-      >
-        <div className="flex flex-col gap-6 h-full justify-center" style={{ padding: '8% 10%', width: '100%' }}>
+      <HeaderCard>
           {/* Fila superior: Logo + Nombre + Botón Salir */}
           <div className="flex flex-row items-center justify-between w-full">
             <div className="flex items-center gap-3">
@@ -162,49 +152,60 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center justify-end">
+              <SmallButton
+                icon={
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{ imageRendering: 'pixelated' }}
+                  >
+                    <path 
+                      d="M15 2H9v2H7v6h2V4h6V2zm0 8H9v2h6v-2zm0-6h2v6h-2V4zM4 16h2v-2h12v2H6v4h12v-4h2v6H4v-6z" 
+                      fill="#000000"
+                      stroke="#000000"
+                      strokeWidth="1"
+                    />
+                  </svg>
+                }
+                onClick={() => router.push('/profile')}
+                className="w-[50px] h-[50px]"
+              />
               <SpriteButton
                 label="Recompensas"
                 variant="white"
                 onClick={() => router.push('/rewards')}
-                className="px-0"
-                minWidth={140}
-                maxWidth={140}
+                minWidth={155}
+                minHeight={50}
+                maxWidth={155}
+                maxHeight={50}
               />
-              <SpriteButton
-                label="Salir"
-                variant="black"
-                onClick={handleLogout}
-                className="px-0"
-                minWidth={120}
-                maxWidth={120}
-              />
+              <div className="h-[50px]">
+                <SpriteButton
+                  label="Salir"
+                  variant="black"
+                  onClick={handleLogout}
+                  minWidth={120}
+                  minHeight={50}
+                  maxWidth={120}
+                  maxHeight={50}
+                />
+              </div>
             </div>
           </div>
 
           {/* Stats: Hábitos, Racha Total, Mejor Racha */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-900">Hábitos</PixelText>
-              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
-                {activeHabits.length}
-              </PixelText>
-            </div>
-            <div className="flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-900">Racha Total</PixelText>
-              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
-                {totalStreak}
-              </PixelText>
-            </div>
-            <div className="flex flex-col items-center">
-              <PixelText size="xs" color="text-gray-900">Mejor Racha</PixelText>
-              <PixelText size="2xl" color="text-gray-900" fontWeight={700}>
-                {longestStreak}
-              </PixelText>
+          <div className="flex justify-center">
+            <div className="flex gap-6">
+              <StatsBox label="Hábitos" value={activeHabits.length} />
+              <StatsBox label="Racha Total" value={totalStreak} />
+              <StatsBox label="Mejor Racha" value={longestStreak} />
             </div>
           </div>
-        </div>
-      </div>
+      </HeaderCard>
 
       {/* Habits Cards */}
       {loading ? (

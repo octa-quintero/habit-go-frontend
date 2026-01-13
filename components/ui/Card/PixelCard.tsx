@@ -33,9 +33,9 @@ const PixelCard: React.FC<PixelCardProps> = ({
       
       {/* Contenido con scroll si excede el tamaño */}
       <div 
-        className={`relative z-10 w-full h-full flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden ${gap}`}
+        className={`relative z-10 w-full h-full flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden mb-6 ${gap}`}
         style={{
-          padding: '8% 10%',
+          padding: '10% 10% 14% 10%',
         }}
       >
         {children}

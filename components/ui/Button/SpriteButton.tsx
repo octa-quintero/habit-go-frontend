@@ -162,8 +162,15 @@ const SpriteButton: React.FC<SpriteButtonProps> = ({
   return (
     <button
       type="button"
-      className={`group relative flex items-center justify-center w-full h-full select-none border-none outline-none bg-transparent overflow-hidden ${className}`}
-      style={{ minWidth, minHeight, maxWidth, maxHeight }}
+      className={`group relative flex items-center justify-center select-none border-none outline-none bg-transparent overflow-visible ${className}`}
+      style={{ 
+        width: `${minWidth}px`,
+        height: `${minHeight}px`,
+        minWidth, 
+        minHeight, 
+        maxWidth, 
+        maxHeight 
+      }}
       onMouseDown={handlePressStart}
       onMouseUp={handlePressEnd}
       onMouseLeave={handlePressEnd}
@@ -175,8 +182,14 @@ const SpriteButton: React.FC<SpriteButtonProps> = ({
       <img
         src={pressed ? config.spriteActive : config.spriteNormal}
         alt=""
-        className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
-        style={{ imageRendering: 'pixelated', zIndex: 0 }}
+        className="absolute inset-0 pointer-events-none select-none"
+        style={{ 
+          imageRendering: 'pixelated', 
+          zIndex: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'fill'
+        }}
         draggable={false}
         loading="eager"
       />

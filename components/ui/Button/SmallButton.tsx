@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 
 interface SmallButtonProps {
-  label: string;
+  label?: string;
+  icon?: React.ReactNode;
   onClick?: () => void;
   className?: string;
 }
 
 const SmallButton: React.FC<SmallButtonProps> = ({ 
-  label, 
+  label,
+  icon,
   onClick,
   className = ''
 }) => {
@@ -55,29 +57,39 @@ const SmallButton: React.FC<SmallButtonProps> = ({
           height: '100%',
         }}
       />
-      {/* Ícono de check de pixelarticons */}
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* Contenido del botón */}
+      <div
         style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           pointerEvents: 'none',
-          imageRendering: 'pixelated',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <path
-          d="M18 6h2v2h-2V6zm-2 4V8h2v2h-2zm-2 2v-2h2v2h-2zm-2 2h2v-2h-2v2zm-2 2h2v-2h-2v2zm-2 0v2h2v-2H8zm-2-2h2v2H6v-2zm0 0H4v-2h2v2z"
-          fill="#000000"
-          stroke="#000000"
-          strokeWidth="0.5"
-        />
-      </svg>
+        {icon ? icon : label ? (
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              imageRendering: 'pixelated',
+            }}
+          >
+            <path
+              d="M18 6h2v2h-2V6zm-2 4V8h2v2h-2zm-2 2v-2h2v2h-2zm-2 2h2v-2h-2v2zm-2 2h2v-2h-2v2zm-2 0v2h2v-2H8zm-2-2h2v2H6v-2zm0 0H4v-2h2v2z"
+              fill="#000000"
+              stroke="#000000"
+              strokeWidth="0.5"
+            />
+          </svg>
+        ) : null}
+      </div>
     </button>
   );
 };
