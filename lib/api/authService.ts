@@ -62,8 +62,8 @@ export const authService = {
   /**
    * Restablecer contraseña
    */
-  async resetPassword(token: string, newPassword: string): Promise<void> {
-    await api.post('/auth/reset-password', { token, newPassword });
+  async resetPassword(email: string, token: string, newPassword: string): Promise<void> {
+    await api.post('/auth/reset-password', { email, token, newPassword });
   },
 
   /**

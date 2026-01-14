@@ -1,10 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
+"use client";
 import SpriteButton from '../components/ui/Button/SpriteButton';
 import PixelCard from '../components/ui/Card/PixelCard';
 import PixelText from '../components/ui/Text/PixelText';
 import Link from "next/link";
+import { API_BASE_URL } from '@/lib/constants';
 
 export default function Home() {
+  const handleGoogleLogin = () => {
+    // Redirigir al endpoint de Google OAuth del backend
+    window.location.href = `${API_BASE_URL}/auth/google`;
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <PixelCard gap="gap-8">
@@ -52,6 +59,7 @@ export default function Home() {
                   variant="black"
                   icon={<img src="/social/gmail.png" alt="Gmail" className="w-6 h-6 inline-block align-middle shrink-0 m-0" style={{ imageRendering: 'pixelated' }} />}
                   iconPosition="right"
+                  onClick={handleGoogleLogin}
                   className="w-full sm:w-auto"
                 />
               </div>

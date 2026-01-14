@@ -6,6 +6,7 @@ import SpriteButton from '../../components/ui/Button/SpriteButton';
 import PixelText from '../../components/ui/Text/PixelText';
 import LoginForm from '../../components/features/Auth/LoginForm';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { API_BASE_URL } from '@/lib/constants';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,11 @@ export default function LoginPage() {
     if (formRef.current) {
       formRef.current.submit();
     }
+  };
+
+  const handleGoogleLogin = () => {
+    // Redirigir al endpoint de Google OAuth del backend
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   return (
@@ -42,6 +48,7 @@ export default function LoginPage() {
               }
               iconPosition="right"
               disabled={loading}
+              onClick={handleGoogleLogin}
               className="w-full sm:flex-1"
             />
           </div>

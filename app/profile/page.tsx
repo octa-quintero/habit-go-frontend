@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
 import PixelText from '../../components/ui/Text/PixelText';
+import PixelInput from '../../components/ui/Input/PixelInput';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { usersService } from '@/lib/api/usersService';
+import { authService } from '@/lib/api/authService';
 import { getUser, clearAuth } from '@/lib/auth';
-import type { User } from '@/types/api';
+import { User } from '@/types/api';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -21,8 +23,26 @@ export default function ProfilePage() {
     name: '',
     username: '',
     email: '',
-    password: '',
   });
+
+  // Estado para controlar qué campos son editables
+  const [editableFields, setEditableFields] = useState({
+    name: false,
+    username: false,
+    email: false,
+  });
+
+  // Estado para cambio de contraseña
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+
+  const toggleEdit = (field: keyof typeof editableFields) => {
+    setEditableFields(prev => ({ ...prev, [field]: !prev[field] }));
+  };
 
   useEffect(() => {
     const userData = getUser();
@@ -42,7 +62,6 @@ export default function ProfilePage() {
         name: profile.name,
         username: profile.username,
         email: profile.email,
-        password: '',
       });
     } catch (err: any) {
       console.error('Error al cargar perfil:', err);
@@ -52,8 +71,14 @@ export default function ProfilePage() {
     }
   };
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+    setSuccess('');
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
     setSuccess('');
   };
@@ -78,11 +103,50 @@ export default function ProfilePage() {
 
       await usersService.updateProfile(updates);
       setSuccess('Perfil actualizado correctamente');
-      setFormData(prev => ({ ...prev, password: '' }));
       await loadProfile();
     } catch (err: any) {
-      console.error('Error al actualizar perfil:', err);
       setError(err.response?.data?.message || 'Error al actualizar el perfil');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      setSaving(true);
+      setError('');
+      setSuccess('');
+
+      // Validaciones
+      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+        setError('Todos los campos de contraseña son requeridos');
+        return;
+      }
+
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        setError('Las contraseñas nuevas no coinciden');
+        return;
+      }
+
+      if (passwordData.newPassword.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+
+      // Actualizar contraseña
+      await usersService.updateProfile({
+        password: passwordData.newPassword,
+      });
+
+      setSuccess('Contraseña actualizada correctamente');
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      setShowPasswordSection(false);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al cambiar la contraseña');
     } finally {
       setSaving(false);
     }
@@ -143,26 +207,26 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-row gap-2">
             <SpriteButton
               label={saving ? 'Guardando...' : 'Guardar Cambios'}
               disabled={saving}
               onClick={handleSave}
-              className="w-full"
+              className="flex-1"
             />
             <SpriteButton
               variant="white"
               label="Volver al Dashboard"
               disabled={saving}
               onClick={() => router.push('/dashboard')}
-              className="w-full"
+              className="flex-1"
             />
             <SpriteButton
               variant="black"
               label="Eliminar Cuenta"
               disabled={saving}
               onClick={handleDeleteAccount}
-              className="w-full"
+              className="flex-1"
             />
           </div>
         </div>
@@ -170,90 +234,133 @@ export default function ProfilePage() {
     >
       <div className="space-y-4">
         {/* Nombre */}
-        <div className="space-y-1">
-          <PixelText size="xs" color="text-gray-700" fontWeight={700}>
-            Nombre
-          </PixelText>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            className="w-full px-3 py-2 border-2 border-gray-900 focus:outline-none focus:border-gray-600"
-            style={{ 
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '10px',
-              imageRendering: 'pixelated',
-            }}
-            disabled={saving}
-          />
-        </div>
+        <PixelInput
+          label="Nombre"
+          type="text"
+          name="name"
+          id="name"
+          value={formData.name}
+          onChange={handleChange}
+          disabled={saving}
+          showEditIcon
+          isEditable={editableFields.name}
+          onEditClick={() => toggleEdit('name')}
+        />
 
         {/* Username */}
-        <div className="space-y-1">
-          <PixelText size="xs" color="text-gray-700" fontWeight={700}>
-            Usuario
-          </PixelText>
-          <input
-            type="text"
-            value={formData.username}
-            onChange={(e) => handleChange('username', e.target.value)}
-            className="w-full px-3 py-2 border-2 border-gray-900 focus:outline-none focus:border-gray-600"
-            style={{ 
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '10px',
-              imageRendering: 'pixelated',
-            }}
-            disabled={saving}
-          />
-        </div>
+        <PixelInput
+          label="Usuario"
+          type="text"
+          name="username"
+          id="username"
+          value={formData.username}
+          onChange={handleChange}
+          disabled={saving}
+          showEditIcon
+          isEditable={editableFields.username}
+          onEditClick={() => toggleEdit('username')}
+        />
 
         {/* Email */}
-        <div className="space-y-1">
-          <PixelText size="xs" color="text-gray-700" fontWeight={700}>
-            Email
-          </PixelText>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) => handleChange('email', e.target.value)}
-            className="w-full px-3 py-2 border-2 border-gray-900 focus:outline-none focus:border-gray-600"
-            style={{ 
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '10px',
-              imageRendering: 'pixelated',
-            }}
+        <PixelInput
+          label="Email"
+          type="email"
+          name="email"
+          id="email"
+          value={formData.email}
+          onChange={handleChange}
+          disabled={saving}
+          showEditIcon
+          isEditable={editableFields.email}
+          onEditClick={() => toggleEdit('email')}
+        />
+
+        {/* Cambiar Contraseña */}
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={() => router.push('/auth/forgot-password')}
+            className="text-left w-full"
             disabled={saving}
-          />
+          >
+            <PixelText 
+              size="sm" 
+              color="text-blue-600 hover:text-blue-700"
+              className="cursor-pointer underline"
+            >
+              Cambiar contraseña
+            </PixelText>
+          </button>
         </div>
 
-        {/* Contraseña */}
-        <div className="space-y-1">
-          <PixelText size="xs" color="text-gray-700" fontWeight={700}>
-            Nueva Contraseña (opcional)
-          </PixelText>
-          <input
-            type="password"
-            value={formData.password}
-            onChange={(e) => handleChange('password', e.target.value)}
-            placeholder="Dejar en blanco para mantener"
-            className="w-full px-3 py-2 border-2 border-gray-900 focus:outline-none focus:border-gray-600"
-            style={{ 
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: '10px',
-              imageRendering: 'pixelated',
-            }}
+        {/* Sección de cambio de contraseña anterior (comentada por si acaso)
+        <div className="pt-2 border-t-2 border-gray-300">
+          <button
+            type="button"
+            onClick={() => setShowPasswordSection(!showPasswordSection)}
+            className="text-left w-full"
             disabled={saving}
-          />
+          >
+            <PixelText 
+              size="sm" 
+              color="text-blue-600 hover:text-blue-700"
+              className="cursor-pointer underline"
+            >
+              {showPasswordSection ? '▼ Ocultar cambio de contraseña' : '▶ Cambiar contraseña'}
+            </PixelText>
+          </button>
+
+          {showPasswordSection && (
+            <div className="mt-4 space-y-4 pl-4 border-l-2 border-gray-300">
+              <PixelInput
+                label="Contraseña Actual"
+                type="password"
+                name="currentPassword"
+                id="currentPassword"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChange}
+                disabled={saving}
+                placeholder="Ingresa tu contraseña actual"
+              />
+
+              <PixelInput
+                label="Nueva Contraseña"
+                type="password"
+                name="newPassword"
+                id="newPassword"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
+                disabled={saving}
+                placeholder="Mínimo 6 caracteres"
+              />
+
+              <PixelInput
+                label="Confirmar Nueva Contraseña"
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                value={passwordData.confirmPassword}
+                onChange={handlePasswordChange}
+                disabled={saving}
+                placeholder="Repite la nueva contraseña"
+              />
+
+              <SpriteButton
+                label={saving ? 'Cambiando...' : 'Cambiar Contraseña'}
+                disabled={saving}
+                onClick={handleChangePassword}
+                className="w-full"
+              />
+            </div>
+          )}
         </div>
+        */}
 
         {/* Información adicional */}
         {user && (
           <div className="pt-2 border-t-2 border-gray-300 space-y-1">
             <PixelText size="xs" color="text-gray-500">
-              Cuenta creada: {new Date(user.createdAt).toLocaleDateString()}
-            </PixelText>
-            <PixelText size="xs" color="text-gray-500">
-              Rol: {user.role}
+              Cuenta creada: <span className="font-bold">{new Date(user.createdAt).toLocaleDateString()}</span>
             </PixelText>
             {user.emailVerified && (
               <PixelText size="xs" color="text-green-600">
@@ -262,6 +369,7 @@ export default function ProfilePage() {
             )}
           </div>
         )}
+
       </div>
     </AuthLayout>
   );
