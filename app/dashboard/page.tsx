@@ -10,7 +10,8 @@ import StatsBox from '../../components/ui/Card/StatsBox';
 import SmallButton from '../../components/ui/Button/SmallButton';
 import DeleteButton from '../../components/ui/Button/DeleteButton';
 import { PlantSprite } from '@/components/ui/Plant';
-import { FireIcon, PlantIcon } from '@/components/ui/Icons/PixelIcons';
+import { PlantIcon } from '@/components/ui/Icons/PixelIcons';
+import InfoModal from '@/components/ui/Modal/InfoModal';
 import { habitsService } from '@/lib/api/habitsService';
 import { getUser, clearAuth } from '@/lib/auth';
 import type { Habit } from '@/types/api';
@@ -21,6 +22,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     const userData = getUser();
@@ -70,8 +73,8 @@ export default function DashboardPage() {
       
       // Verificar si ya estaba completado
       if (result.alreadyCompleted) {
-        setError('Ya completaste el hábito hoy ✓');
-        setTimeout(() => setError(''), 2000);
+        setModalMessage('Ya completaste este hábito hoy. ¡Sigue así!');
+        setShowModal(true);
         return;
       }
       
@@ -112,8 +115,8 @@ export default function DashboardPage() {
   const longestStreak = Math.max(...activeHabits.map(h => h.longestStreak || 0), 0);
 
   // Dividir hábitos: primeros 3 en la card principal, resto en grupos de 3
-  const firstThreeHabits = activeHabits.slice(0, 3);
-  const remainingHabits = activeHabits.slice(3);
+  const firstThreeHabits = activeHabits.slice(0, 4);
+  const remainingHabits = activeHabits.slice(4);
   
   const habitsPerCard = 3;
   const remainingHabitGroups: Habit[][] = [];
@@ -207,6 +210,14 @@ export default function DashboardPage() {
           </div>
       </HeaderCard>
 
+      {/* Modal informativo */}
+      <InfoModal
+        isOpen={showModal}
+        message={modalMessage}
+        onClose={() => setShowModal(false)}
+        variant="success"
+      />
+
       {/* Habits Cards */}
       {loading ? (
         <PixelCard>
@@ -219,14 +230,10 @@ export default function DashboardPage() {
       ) : error ? (
         <PixelCard>
           <div className="py-6 px-4">
-            <div className={`px-2 py-1 border-2 ${
-              error.includes('Ya completaste') 
-                ? 'bg-green-100 border-green-500' 
-                : 'bg-red-100 border-red-500'
-            }`}>
+            <div className="px-2 py-1 border-2 bg-red-100 border-red-500">
               <PixelText 
                 size="xs" 
-                color={error.includes('Ya completaste') ? 'text-green-700' : 'text-red-700'} 
+                color="text-red-700" 
                 align="center"
               >
                 {error}

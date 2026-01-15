@@ -155,6 +155,7 @@ export interface HabitRegister {
   notes?: string;
   createdAt: string;
   updatedAt?: string;
+  alreadyCompleted?: boolean;
 }
 
 /** Create Habit Completion DTO */
