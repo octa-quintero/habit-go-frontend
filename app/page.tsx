@@ -15,19 +15,13 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <PixelCard gap="gap-8">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 w-full">
-                <span
-                  className="text-3xl sm:text-5xl font-press-start text-gray-900"
-                  style={{
-                    fontWeight: 400,
-                    textDecoration: 'underline',
-                    textDecorationColor: '#222',
-                    textDecorationThickness: '4px',
-                    textUnderlineOffset: '6px',
-                  }}
-                >
-                  Habit-GO
-                </span>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-0 sm:gap-0 w-full">
+                <img 
+                  src="/habit-go/habit-go.png" 
+                  alt="Habit-GO Logo" 
+                  className="h-20 sm:h-20 w-auto" 
+                  style={{ imageRendering: 'pixelated' }} 
+                />
             <span className="relative flex items-center justify-center" style={{ minWidth: '8rem', minHeight: '4rem' }}>
               <img src="/logo/Marco.png" alt="Marco de Tito" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-26 h-26 sm:w-26 sm:h-26 z-0" style={{ imageRendering: 'pixelated' }} />
               <img src="/logo/TitoElGatito.gif" alt="Tito el Gatito" className="relative z-10 w-12 h-12 sm:w-15 sm:h-15" style={{ imageRendering: 'pixelated' }} />
