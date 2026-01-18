@@ -1,16 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
 import PixelText from '../../components/ui/Text/PixelText';
 import LoginForm from '../../components/features/Auth/LoginForm';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { API_BASE_URL } from '@/lib/constants';
+import { getUser } from '@/lib/auth';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const formRef = useRef<{ submit: () => void } | null>(null);
+
+  useEffect(() => {
+    // Si ya está logueado, redirigir al dashboard
+    const user = getUser();
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [router]);
 
   const handleLogin = () => {
     if (formRef.current) {

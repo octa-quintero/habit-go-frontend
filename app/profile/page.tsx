@@ -7,9 +7,8 @@ import PixelText from '../../components/ui/Text/PixelText';
 import PixelInput from '../../components/ui/Input/PixelInput';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { usersService } from '@/lib/api/usersService';
-import { authService } from '@/lib/api/authService';
 import { getUser, clearAuth } from '@/lib/auth';
-import { User } from '@/types/api';
+import type { User } from '@/types/api';
 
 export default function ProfilePage() {
   const router = useRouter();

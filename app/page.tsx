@@ -1,14 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import SpriteButton from '../components/ui/Button/SpriteButton';
 import PixelCard from '../components/ui/Card/PixelCard';
 import PixelText from '../components/ui/Text/PixelText';
 import Link from "next/link";
 import { API_BASE_URL } from '@/lib/constants';
+import { getUser } from '@/lib/auth';
 
 export default function Home() {
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Verificar si el usuario está logueado
+    const user = getUser();
+    if (user) {
+      // Si está logueado, redirigir al dashboard
+      router.push('/dashboard');
+    }
+  }, [router]);
+
   const handleGoogleLogin = () => {
-    // Redirigir al endpoint de Google OAuth del backend
     window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
