@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PixelCard from '../../components/ui/Card/PixelCard';
 import HeaderCard from '../../components/ui/Card/HeaderCard';
+import HeaderCardMobile from '../../components/ui/Card/HeaderCardMobile';
+import PixelCardMobileHabits from '../../components/ui/Card/PixelCardMobileHabits';
 import PixelText from '../../components/ui/Text/PixelText';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
 import StatsBox from '../../components/ui/Card/StatsBox';
@@ -124,91 +126,128 @@ export default function DashboardPage() {
     remainingHabitGroups.push(remainingHabits.slice(i, i + habitsPerCard));
   }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
-      {/* Header Card con background card 1 */}
-      <HeaderCard>
-          {/* Fila superior: Logo + Nombre + Botón Salir */}
-          <div className="flex flex-row items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <span className="relative flex items-center justify-center" style={{ minWidth: '3rem', minHeight: '3rem' }}>
-                <img 
-                  src="/logo/Marco.png" 
-                  alt="Marco" 
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 z-0" 
-                  style={{ imageRendering: 'pixelated' }} 
-                />
-                <img 
-                  src="/logo/TitoElGatito.gif" 
-                  alt="Tito" 
-                  className="relative z-10 w-7 h-7" 
-                  style={{ imageRendering: 'pixelated' }} 
-                />
-              </span>
-              <div>
-                <PixelText size="lg" color="text-gray-900" fontWeight={700}>
-                  {user?.name || 'Usuario'}
-                </PixelText>
-                <PixelText size="xs" color="text-gray-900">
-                  @{user?.username}
-                </PixelText>
-              </div>
-            </div>
-            
-            <div className="flex gap-2 items-center justify-end">
-              <SmallButton
-                icon={
-                  <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ imageRendering: 'pixelated' }}
-                  >
-                    <path 
-                      d="M15 2H9v2H7v6h2V4h6V2zm0 8H9v2h6v-2zm0-6h2v6h-2V4zM4 16h2v-2h12v2H6v4h12v-4h2v6H4v-6z" 
-                      fill="#000000"
-                      stroke="#000000"
-                      strokeWidth="1"
-                    />
-                  </svg>
-                }
-                onClick={() => router.push('/profile')}
-                className="w-[50px] h-[50px]"
-              />
-              <SpriteButton
-                label="Recompensas"
-                variant="white"
-                onClick={() => router.push('/rewards')}
-                minWidth={155}
-                minHeight={50}
-                maxWidth={155}
-                maxHeight={50}
-              />
-              <div className="h-[50px]">
-                <SpriteButton
-                  label="Salir"
-                  variant="black"
-                  onClick={handleLogout}
-                  minWidth={120}
-                  minHeight={50}
-                  maxWidth={120}
-                  maxHeight={50}
-                />
-              </div>
-            </div>
+  const headerContent = (
+    <>
+      {/* Fila superior: Logo + Nombre + Botones */}
+      <div className="flex flex-row items-center justify-between w-full gap-4 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="relative flex items-center justify-center" style={{ minWidth: '2.5rem', minHeight: '2.5rem' }}>
+            <img 
+              src="/logo/Marco.png" 
+              alt="Marco" 
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 z-0" 
+              style={{ imageRendering: 'pixelated' }} 
+            />
+            <img 
+              src="/logo/TitoElGatito.gif" 
+              alt="Tito" 
+              className="relative z-10 w-5 h-5 sm:w-7 sm:h-7" 
+              style={{ imageRendering: 'pixelated' }} 
+            />
+          </span>
+          <div className="min-w-0">
+            <PixelText size="lg" color="text-gray-900" fontWeight={700} className="text-sm sm:text-lg truncate">
+              {user?.name || 'Usuario'}
+            </PixelText>
+            <PixelText size="xs" color="text-gray-900" className="text-[0.4rem] sm:text-xs truncate">
+              @{user?.username}
+            </PixelText>
           </div>
+        </div>
+        
+        <div className="flex gap-1 sm:gap-2 items-center justify-center sm:justify-end flex-wrap">
+          <SmallButton
+            icon={
+              <svg 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ imageRendering: 'pixelated' }}
+              >
+                <path 
+                  d="M15 2H9v2H7v6h2V4h6V2zm0 8H9v2h6v-2zm0-6h2v6h-2V4zM4 16h2v-2h12v2H6v4h12v-4h2v6H4v-6z" 
+                  fill="#000000"
+                  stroke="#000000"
+                  strokeWidth="1"
+                />
+              </svg>
+            }
+            onClick={() => router.push('/profile')}
+            className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px]"
+          />
+          <SpriteButton
+            label="Recompensas"
+            variant="white"
+            onClick={() => router.push('/rewards')}
+            minWidth={130}
+            minHeight={40}
+            maxWidth={155}
+            maxHeight={50}
+            className="hidden sm:block"
+          />
+          <SpriteButton
+            label="Recompensas"
+            variant="white"
+            onClick={() => router.push('/rewards')}
+            minWidth={110}
+            minHeight={35}
+            maxWidth={130}
+            maxHeight={40}
+            className="block sm:hidden"
+          />
+          <div className="hidden sm:block h-[50px]">
+            <SpriteButton
+              label="Salir"
+              variant="black"
+              onClick={handleLogout}
+              minWidth={120}
+              minHeight={50}
+              maxWidth={120}
+              maxHeight={50}
+            />
+          </div>
+          <div className="block sm:hidden h-[35px]">
+            <SpriteButton
+              label="Salir"
+              variant="black"
+              onClick={handleLogout}
+              minWidth={90}
+              minHeight={35}
+              maxWidth={100}
+              maxHeight={40}
+            />
+          </div>
+        </div>
+      </div>
 
-          {/* Stats: Hábitos, Racha Total, Mejor Racha */}
-          <div className="flex justify-center">
-            <div className="flex gap-6">
-              <StatsBox label="Hábitos" value={activeHabits.length} />
-              <StatsBox label="Racha Total" value={totalStreak} />
-              <StatsBox label="Mejor Racha" value={longestStreak} />
-            </div>
-          </div>
-      </HeaderCard>
+      {/* Stats: Hábitos, Racha Total, Mejor Racha */}
+      <div className="flex justify-center w-full">
+        <div className="flex gap-0.5 sm:gap-6 flex-nowrap justify-center">
+          <StatsBox label="Hábitos" value={activeHabits.length} />
+          <StatsBox label="Racha Total" value={totalStreak} />
+          <StatsBox label="Mejor Racha" value={longestStreak} />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-start p-4 gap-4">
+      {/* Desktop Header */}
+      <div className="hidden sm:block w-full">
+        <HeaderCard>
+          {headerContent}
+        </HeaderCard>
+      </div>
+
+      {/* Mobile Header */}
+      <div className="sm:hidden w-full">
+        <HeaderCardMobile>
+          {headerContent}
+        </HeaderCardMobile>
+      </div>
 
       {/* Modal informativo */}
       <InfoModal
@@ -245,128 +284,239 @@ export default function DashboardPage() {
 
       {/* Primera Card con Header y primeros 2 hábitos */}
       {!loading && (
-        <PixelCard gap="gap-0">
-          <div className="w-full h-full flex flex-col justify-start pt-6 pb-6 px-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <PixelText size="base" color="text-gray-900" fontWeight={700}>
-                  Mis Hábitos
-                </PixelText>
-                <img 
-                  src="/chicken/chicken.gif" 
-                  alt="chicken" 
-                  style={{ width: '56px', height: '56px', imageRendering: 'pixelated' }}
-                />
-              </div>
-              <SpriteButton
-                label="+ Nuevo"
-                onClick={() => router.push('/habits/create')}
-                className="px-0"
-                minWidth={120}
-                maxWidth={120}
-              />
-            </div>
+        <>
+          {/* Desktop Version */}
+          <div className="hidden sm:block w-full">
+            <PixelCard gap="gap-0">
+              <div className="w-full h-full flex flex-col justify-start pt-6 pb-6 px-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <PixelText size="base" color="text-gray-900" fontWeight={700}>
+                      Mis Hábitos
+                    </PixelText>
+                    <img 
+                      src="/chicken/chicken.gif" 
+                      alt="chicken" 
+                      style={{ width: '56px', height: '56px', imageRendering: 'pixelated' }}
+                    />
+                  </div>
+                  <SpriteButton
+                    label="+ Nuevo"
+                    onClick={() => router.push('/habits/create')}
+                    className="px-0"
+                    minWidth={120}
+                    maxWidth={120}
+                  />
+                </div>
 
-            {activeHabits.length === 0 ? (
-              <div className="text-center py-8">
-                <PixelText size="sm" color="text-gray-900">
-                  No tienes hábitos aún
-                </PixelText>
-                <PixelText size="xs" color="text-gray-900" className="mt-2">
-                  ¡Crea tu primer hábito para comenzar!
-                </PixelText>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {firstThreeHabits.map((habit) => {
-                  const maxStage = 7;
-                  const currentStage = Math.min(habit.streak + 1, maxStage);
-                  
-                  console.log('[Dashboard] Habit:', { 
-                    id: habit.id, 
-                    title: habit.title, 
-                    streak: habit.streak, 
-                    currentStage 
-                  });
-                  
-                  return (
-                    <div
-                      key={`${habit.id}-${habit.streak}`}
-                      className="p-3 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-shrink-0">
-                          <PlantSprite 
-                            flowerNumber={habit.plantNumber}
-                            stage={currentStage}
-                            size={64}
-                            key={`plant-${habit.id}-${currentStage}`}
-                          />
-                        </div>
-                        
-                        <div className="flex-1 flex gap-3 items-start">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1">
-                              <PixelText size="xs" color="text-gray-900" fontWeight={700}>
-                                {habit.streak || 0} días
-                              </PixelText>
-                              <img 
-                                src="/fire/Fire gif.gif" 
-                                alt="fire" 
-                                style={{ width: '24px', height: '24px', imageRendering: 'pixelated' }}
+                {activeHabits.length === 0 ? (
+                  <div className="text-center py-8">
+                    <PixelText size="sm" color="text-gray-900">
+                      No tienes hábitos aún
+                    </PixelText>
+                    <PixelText size="xs" color="text-gray-900" className="mt-2">
+                      ¡Crea tu primer hábito para comenzar!
+                    </PixelText>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {firstThreeHabits.map((habit) => {
+                      const maxStage = 7;
+                      const currentStage = Math.min(habit.streak + 1, maxStage);
+                      
+                      return (
+                        <div
+                          key={`${habit.id}-${habit.streak}`}
+                          className="p-3 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-shrink-0">
+                              <PlantSprite 
+                                flowerNumber={habit.plantNumber}
+                                stage={currentStage}
+                                size={64}
+                                key={`plant-${habit.id}-${currentStage}`}
                               />
                             </div>
-                            <div className="flex items-center gap-1">
-                              <PlantIcon size={12} color="#000000" />
-                              <PixelText size="xs" color="text-gray-900" fontWeight={700}>
-                                Etapa {currentStage}/{maxStage}
-                              </PixelText>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div style={{
-                                backgroundColor: habit.frequency === 'daily' ? '#FEF3C7' : '#DBEAFE',
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                border: `1px solid ${habit.frequency === 'daily' ? '#FCD34D' : '#93C5FD'}`
-                              }}>
-                                <PixelText size="xs" color={habit.frequency === 'daily' ? 'text-yellow-900' : 'text-blue-900'} fontWeight={700}>
-                                  {habit.frequency === 'daily' ? '⏰ Diario' : '📅 Semanal'}
+                            
+                            <div className="flex-1 flex gap-3 items-start">
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-1">
+                                  <PixelText size="xs" color="text-gray-900" fontWeight={700}>
+                                    {habit.streak || 0} días
+                                  </PixelText>
+                                </div>
+                                <PixelText size="xs" color="text-gray-900">
+                                  {habit.title}
                                 </PixelText>
                               </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <PixelText size="sm" color="text-gray-900" fontWeight={700}>
-                              {habit.title}
-                            </PixelText>
-                            {habit.description && (
-                              <PixelText size="xs" color="text-gray-900" className="mt-1">
-                                {habit.description}
-                              </PixelText>
-                            )}
+
+                            <div className="flex gap-1 flex-shrink-0">
+                              <SmallButton
+                                icon={
+                                  <svg 
+                                    width="24" 
+                                    height="24" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ imageRendering: 'pixelated' }}
+                                  >
+                                    <path 
+                                      d="M10 13.5H5v3h5v-3zm6-4H11v3h5v-3zm4 8h5v-3h-5v3zm0-4h5v-3h-5v3zm0-4h5v-3h-5v3zM4 9.5h5v-3H4v3zm6 0h5v-3h-5v3z" 
+                                      fill="#000000"
+                                      stroke="#000000"
+                                      strokeWidth="1"
+                                    />
+                                  </svg>
+                                }
+                                onClick={() => router.push(`/habits/edit/${habit.id}`)}
+                                className="w-[40px] h-[40px]"
+                              />
+                              <SmallButton
+                                icon={
+                                  <svg 
+                                    width="24" 
+                                    height="24" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ imageRendering: 'pixelated' }}
+                                  >
+                                    <path 
+                                      d="M20 5.41L18.59 4 12 10.59 5.41 4 4 5.41 10.59 12 4 18.59 5.41 20 12 13.41 18.59 20 20 18.59 13.41 12 20 5.41z" 
+                                      fill="#000000"
+                                      stroke="#000000"
+                                      strokeWidth="1"
+                                    />
+                                  </svg>
+                                }
+                                onClick={() => handleDeleteHabit(habit.id)}
+                                className="w-[40px] h-[40px]"
+                              />
+                              <SpriteButton
+                                label="Marcar"
+                                onClick={() => handleMarkComplete(habit.id)}
+                                minWidth={100}
+                                maxWidth={100}
+                                minHeight={40}
+                                maxHeight={40}
+                              />
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="flex gap-2">
-                          <SmallButton
-                            label="✓"
-                            onClick={() => handleMarkComplete(habit.id)}
-                            className="w-[60px] h-[60px]"
-                          />
-                          <DeleteButton
-                            onClick={() => handleDeleteHabit(habit.id)}
-                            className="w-[60px] h-[60px]"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
+            </PixelCard>
           </div>
-        </PixelCard>
+
+          {/* Mobile Version */}
+          <div className="sm:hidden w-full">
+            <PixelCardMobileHabits gap="gap-0">
+              <div className="w-full flex flex-col justify-start pt-3 pb-4 px-3">
+                <div className="flex items-center justify-between mb-2 w-full">
+                  <div className="flex items-center gap-1">
+                    <PixelText size="base" color="text-gray-900" fontWeight={700} className="text-sm">
+                      Mis Hábitos
+                    </PixelText>
+                    <img 
+                      src="/chicken/chicken.gif" 
+                      alt="chicken" 
+                      style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
+                    />
+                  </div>
+                  <SpriteButton
+                    label="+ Nuevo"
+                    onClick={() => router.push('/habits/create')}
+                    className="px-0"
+                    minWidth={100}
+                    maxWidth={100}
+                    minHeight={32}
+                    maxHeight={36}
+                  />
+                </div>
+
+                {activeHabits.length === 0 ? (
+                  <div className="text-center py-4">
+                    <PixelText size="sm" color="text-gray-900" className="text-xs">
+                      No tienes hábitos aún
+                    </PixelText>
+                    <PixelText size="xs" color="text-gray-900" className="mt-1 text-[0.5rem]">
+                      ¡Crea tu primer hábito!
+                    </PixelText>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {firstThreeHabits.map((habit) => {
+                      const maxStage = 7;
+                      const currentStage = Math.min(habit.streak + 1, maxStage);
+                      
+                      return (
+                        <div
+                          key={`${habit.id}-${habit.streak}`}
+                          className="p-2 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-shrink-0">
+                              <PlantSprite 
+                                flowerNumber={habit.plantNumber}
+                                stage={currentStage}
+                                size={48}
+                                key={`plant-${habit.id}-${currentStage}`}
+                              />
+                            </div>
+                            
+                            <div className="flex-1 flex flex-col gap-0.5">
+                              <PixelText size="xs" color="text-gray-900" fontWeight={700} className="text-[0.5rem]">
+                                {habit.title}
+                              </PixelText>
+                              <PixelText size="xs" color="text-gray-900" className="text-[0.4rem]">
+                                {habit.streak || 0} días
+                              </PixelText>
+                            </div>
+                            
+                            <div className="flex gap-1 flex-shrink-0">
+                              <SmallButton
+                                label="✓"
+                                onClick={() => handleMarkComplete(habit.id)}
+                                className="w-[40px] h-[40px]"
+                              />
+                              <SmallButton
+                                icon={
+                                  <svg 
+                                    width="16" 
+                                    height="16" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ imageRendering: 'pixelated' }}
+                                  >
+                                    <path 
+                                      d="M20 5.41L18.59 4 12 10.59 5.41 4 4 5.41 10.59 12 4 18.59 5.41 20 12 13.41 18.59 20 20 18.59 13.41 12 20 5.41z" 
+                                      fill="#000000"
+                                      stroke="#000000"
+                                      strokeWidth="1"
+                                    />
+                                  </svg>
+                                }
+                                onClick={() => handleDeleteHabit(habit.id)}
+                                className="w-[40px] h-[40px]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </PixelCardMobileHabits>
+          </div>
+        </>
       )}
 
       {/* Cards adicionales para hábitos restantes (grupos de 2) */}

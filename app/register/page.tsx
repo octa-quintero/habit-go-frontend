@@ -38,13 +38,13 @@ export default function RegisterPage() {
     <AuthLayout
       title="Registrarse"
       bottomContent={
-        <div className="space-y-6">
-          <div className="w-full flex flex-col sm:flex-row gap-2">
+        <div className="space-y-3 sm:space-y-6">
+          <div className="w-full flex flex-row gap-1 sm:gap-2 flex-wrap justify-center">
             <SpriteButton
               label={loading ? 'Creando...' : 'Crear Cuenta'}
               disabled={loading}
               onClick={handleCreateAccount}
-              className="w-full sm:flex-1"
+              minWidth={150}
             />
             <SpriteButton
               variant="black"
@@ -60,11 +60,11 @@ export default function RegisterPage() {
               iconPosition="right"
               disabled={loading}
               onClick={handleGoogleLogin}
-              className="w-full sm:flex-1"
+              minWidth={180}
             />
           </div>
 
-          <PixelText size="xs" color="text-gray-600" align="center">
+          <PixelText size="xs" color="text-gray-600" align="center" className="text-[0.5rem] sm:text-xs">
             ¿Ya tienes cuenta?{' '}
             <Link 
               href="/login" 

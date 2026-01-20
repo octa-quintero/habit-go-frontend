@@ -10,17 +10,17 @@ interface StatsBoxProps {
 const StatsBox: React.FC<StatsBoxProps> = ({ 
   label, 
   value,
-  width = '200px' 
+  width = 'w-40 sm:w-56' 
 }) => {
   return (
     <div 
-      className="flex flex-col items-center px-3 py-4"
+      className={`flex flex-col items-center px-2 sm:px-3 py-2 sm:py-4 ${typeof width === 'string' && width.includes('w-') ? width : ''}`}
       style={{
         backgroundImage: 'url(/box/small-box.png)',
         backgroundSize: '100% 100%',
         backgroundRepeat: 'no-repeat',
         imageRendering: 'pixelated',
-        width,
+        ...(typeof width === 'string' && !width.includes('w-') && { width }),
       }}
     >
       <div className="flex items-center gap-1 mb-0.5 whitespace-nowrap">
@@ -28,12 +28,13 @@ const StatsBox: React.FC<StatsBoxProps> = ({
           size="xs" 
           color="text-gray-900" 
           fontWeight={700} 
-          style={{ fontSize: '7px' }}
+          style={{ fontSize: '6px' }}
+          className="text-[0.4rem] sm:text-[0.5rem]"
         >
           {label}
         </PixelText>
       </div>
-      <PixelText size="base" color="text-gray-900" fontWeight={700}>
+      <PixelText size="base" color="text-gray-900" fontWeight={700} className="text-sm sm:text-base">
         {value}
       </PixelText>
     </div>
