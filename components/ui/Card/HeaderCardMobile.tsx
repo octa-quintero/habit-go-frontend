@@ -22,7 +22,7 @@ const HeaderCardMobile: React.FC<HeaderCardMobileProps> = ({ children }) => {
     >
       <div 
         className="flex flex-col gap-2 h-full justify-start" 
-        style={{ padding: '8% 5% 8% 5%', width: '100%' }}
+        style={{ padding: '8% 5% 18% 5%', width: '100%' }}
       >
         {children}
       </div>

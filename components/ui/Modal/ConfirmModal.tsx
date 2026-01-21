@@ -1,6 +1,5 @@
 import React from 'react';
 import PixelText from '../Text/PixelText';
-import SpriteButton from '../Button/SpriteButton';
 
 interface ConfirmModalProps {
   isOpen: boolean;

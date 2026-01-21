@@ -53,10 +53,10 @@ export default function Home() {
           </PixelText>
             <div className="flex flex-col items-center w-full gap-4">
               <div className="flex flex-row gap-1 sm:gap-5 justify-center w-full mb-0 flex-wrap">
-                <Link href="/login" className="flex-shrink min-w-0">
+                <Link href="/login" className="shrink min-w-0">
                   <SpriteButton label="Iniciar Sesión" minWidth={150} />
                 </Link>
-                <Link href="/register" className="flex-shrink min-w-0">
+                <Link href="/register" className="shrink min-w-0">
                   <SpriteButton label="Registrarse" minWidth={150} />
                 </Link>
               </div>

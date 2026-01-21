@@ -10,7 +10,7 @@ interface StatsBoxProps {
 const StatsBox: React.FC<StatsBoxProps> = ({ 
   label, 
   value,
-  width = 'w-40 sm:w-56' 
+  width = 'w-24 sm:w-56' 
 }) => {
   return (
     <div 
