@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PixelCard from '../../components/ui/Card/PixelCard';
+import PixelCardMobile from '../../components/ui/Card/PixelCardMobile';
 import HeaderCard from '../../components/ui/Card/HeaderCard';
+import HeaderCardMobile from '../../components/ui/Card/HeaderCardMobile';
 import PixelText from '../../components/ui/Text/PixelText';
 import SpriteButton from '../../components/ui/Button/SpriteButton';
 import StatsBox from '../../components/ui/Card/StatsBox';
@@ -123,64 +125,82 @@ export default function RewardsPage() {
     'RARE_PLUS', 'RARE', 'UNCOMMON', 'COMMON', 'STARTER'
   ];
 
+  const headerContent = (
+    <>
+      {/* Header Title and Button */}
+      <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
+        <div className="flex items-center gap-2">
+          <img 
+            src="/trophy/trophy.gif" 
+            alt="Trophy" 
+            className="w-6 h-6 sm:w-8 sm:h-8" 
+            style={{ imageRendering: 'pixelated' }}
+          />
+          <PixelText size="lg" color="text-gray-900" fontWeight={700} className="text-sm sm:text-lg">
+            Recompensas
+          </PixelText>
+        </div>
+        <SpriteButton
+          label="Volver"
+          variant="black"
+          onClick={() => router.push('/dashboard')}
+          minWidth={100}
+          minHeight={33}
+          maxWidth={130}
+          maxHeight={38}
+        />
+      </div>
+
+      {/* Stats: Desbloqueadas, Total, Progreso */}
+      <div className="flex justify-center w-full">
+        <div className="flex gap-5 sm:gap-10 flex-nowrap justify-center">
+          <StatsBox label="Desbloqueadas" value={userRewards.length} />
+          <StatsBox label="Total" value={allRewards.length} />
+          <StatsBox 
+            label="Progreso" 
+            value={`${allRewards.length > 0 ? Math.round((userRewards.length / allRewards.length) * 100) : 0}%`}
+          />
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 pb-6"
+      className="min-h-screen flex flex-col items-center justify-start p-4 gap-4"
       style={{
         backgroundImage: 'url("/background/grass-floor.png")',
-        backgroundSize: '64px 64px',
+        backgroundSize: 'clamp(32px, 10vw, 64px)',
         backgroundRepeat: 'repeat',
         imageRendering: 'pixelated',
       }}
     >
-      <div className="w-full max-w-6xl space-y-4">
-        {/* Header Card Separada */}
+      {/* Desktop Header */}
+      <div className="hidden sm:block w-full">
         <HeaderCard>
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <img 
-                  src="/trophy/trophy.gif" 
-                  alt="Trophy" 
-                  className="w-8 h-8" 
-                  style={{ imageRendering: 'pixelated' }}
-                />
-                <PixelText size="lg" color="text-gray-900" fontWeight={700}>
-                  Recompensas
-                </PixelText>
-              </div>
-              <SpriteButton
-                label="Volver"
-                variant="black"
-                onClick={() => router.push('/dashboard')}
-                className="px-0"
-                minWidth={120}
-                maxWidth={120}
-              />
-            </div>
-
-            {/* Stats */}
-            <div className="flex justify-center">
-              <div className="flex gap-6">
-                <StatsBox label="Desbloqueadas" value={userRewards.length} />
-                <StatsBox label="Total" value={allRewards.length} />
-                <StatsBox 
-                  label="Progreso" 
-                  value={`${allRewards.length > 0 ? Math.round((userRewards.length / allRewards.length) * 100) : 0}%`} 
-                />
-              </div>
-            </div>
+          {headerContent}
         </HeaderCard>
+      </div>
 
-        {/* Card de Recompensas */}
-        <PixelCard gap="gap-0">
-          <div 
-            className="w-full h-full flex flex-col py-2 px-0 overflow-y-auto"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#d97706 #e5e7eb',
-            }}
-          >
+      {/* Mobile Header */}
+      <div className="sm:hidden w-full">
+        <HeaderCardMobile>
+          {headerContent}
+        </HeaderCardMobile>
+      </div>
+
+      <div className="w-full max-w-6xl space-y-4">
+
+        {/* Desktop Card de Recompensas */}
+        <div className="hidden sm:block">
+          <PixelCard gap="gap-0">
+            <div 
+              className="w-full h-full flex flex-col py-2 px-0 overflow-y-auto"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#d97706 #e5e7eb',
+              }}
+            >
             {/* Loading/Error States */}
             {loading && (
               <div className="flex justify-center py-8">
@@ -268,8 +288,110 @@ export default function RewardsPage() {
                 )}
               </div>
             )}
-          </div>
-        </PixelCard>
+            </div>
+          </PixelCard>
+        </div>
+
+        {/* Mobile Card de Recompensas */}
+        <div className="sm:hidden">
+          <PixelCardMobile gap="gap-0">
+            <div 
+              className="w-full h-full flex flex-col py-2 px-0 overflow-y-auto"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#d97706 #e5e7eb',
+              }}
+            >
+            {/* Loading/Error States */}
+            {loading && (
+              <div className="flex justify-center py-8">
+                <PixelText size="sm" color="text-gray-600">
+                  Cargando recompensas...
+                </PixelText>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex flex-col items-center justify-center py-8 gap-4">
+                <PixelText size="sm" color="text-gray-600" className="text-center max-w-md">
+                  {error}
+                </PixelText>
+                <PixelText size="xs" color="text-gray-500" className="text-center max-w-md">
+                  Tip: El sistema de recompensas se activará cuando el backend esté configurado con seeds de recompensas.
+                </PixelText>
+              </div>
+            )}
+
+            {/* Rewards Grid por Tier */}
+            {!loading && !error && (
+              <div className="space-y-8 mb-12">
+                {tierOrder.map(tier => {
+                  const tierKey = tier.toUpperCase().replace('_', '_');
+                  const rewards = rewardsByTier[tierKey] || [];
+                  
+                  if (rewards.length === 0) return null;
+
+                  const config = GEM_CONFIG[tier];
+                  
+                  return (
+                    <div key={tier} className="space-y-3">
+                      {/* Tier Header con contador de gemas */}
+                      <div className="flex items-center gap-3 px-2">
+                        <div className="relative">
+                          <GemSprite tier={tier} size={48} />
+                          {/* Contador de gemas acumuladas */}
+                          {getUnlockedCountByTier(tier) > 0 && (
+                            <div className="absolute -top-1 -right-1 bg-gray-900 text-white rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                              <PixelText size="xs" color="text-white" fontWeight={700}>
+                                {getUnlockedCountByTier(tier)}
+                              </PixelText>
+                            </div>
+                          )}
+                        </div>
+                        <PixelText size="sm" color="text-gray-900" fontWeight={700}>
+                          {config.name}
+                        </PixelText>
+                        <div className="flex-1 h-0.5 bg-gray-300"></div>
+                        <PixelText size="xs" color="text-gray-500">
+                          {rewards.filter(r => isUnlocked(r.id)).length}/{rewards.length}
+                        </PixelText>
+                      </div>
+
+                      {/* Rewards Grid - Cards estilo pixel art */}
+                      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {rewards.map(reward => {
+                          const unlocked = isUnlocked(reward.id);
+                          const count = getRewardCount(reward.id);
+                          
+                          return (
+                            <RewardCard
+                              key={reward.id}
+                              name={reward.name}
+                              tier={getTierFromReward(reward)}
+                              variant={(reward.variant || 1) as 1 | 2 | 3}
+                              unlocked={unlocked}
+                              count={count}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Mensaje si no hay recompensas */}
+                {allRewards.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <PixelText size="base" color="text-gray-600" className="text-center">
+                      No hay recompensas disponibles aún.
+                    </PixelText>
+                  </div>
+                )}
+              </div>
+            )}
+            </div>
+          </PixelCardMobile>
+        </div>
       </div>
     </div>
   );
