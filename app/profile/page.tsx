@@ -189,7 +189,7 @@ export default function ProfilePage() {
     <AuthLayout
       title="Mi Perfil"
       bottomContent={
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           {error && (
             <div className="px-3 py-2 bg-red-100 border-2 border-red-500">
               <PixelText size="xs" color="text-red-700" align="center">
@@ -206,26 +206,35 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className="w-full flex flex-row gap-2">
+          <div className="w-full flex flex-row gap-2 sm:gap-3 flex-1 justify-center">
             <SpriteButton
-              label={saving ? 'Guardando...' : 'Guardar Cambios'}
+              label={saving ? 'Guardando...' : 'Guardar'}
               disabled={saving}
               onClick={handleSave}
-              className="flex-1"
+              minWidth={115}
+              minHeight={40}
+              maxWidth={145}
+              maxHeight={50}
             />
             <SpriteButton
               variant="white"
-              label="Volver al Dashboard"
+              label="Dashboard"
               disabled={saving}
               onClick={() => router.push('/dashboard')}
-              className="flex-1"
+              minWidth={115}
+              minHeight={40}
+              maxWidth={145}
+              maxHeight={50}
             />
             <SpriteButton
               variant="black"
-              label="Eliminar Cuenta"
+              label="Eliminar"
               disabled={saving}
               onClick={handleDeleteAccount}
-              className="flex-1"
+              minWidth={110}
+              minHeight={40}
+              maxWidth={140}
+              maxHeight={50}
             />
           </div>
         </div>
