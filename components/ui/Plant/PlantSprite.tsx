@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 
 interface PlantSpriteProps {
@@ -16,7 +17,6 @@ export const PlantSprite: React.FC<PlantSpriteProps> = ({
   const imagePath = `/flower/flower${flower}/${stage}.png`;
   const isMaxStage = stage >= 7;
   
-  console.log('[PlantSprite]', { flowerNumber, flower, stage, imagePath, isMaxStage });
   
   return (
     <div 
@@ -48,7 +48,6 @@ export const PlantSprite: React.FC<PlantSpriteProps> = ({
           objectFit: 'contain'
         }}
         onError={(e) => {
-          console.error('[PlantSprite] Error loading:', imagePath);
           // Si no existe la imagen, intentar con la anterior
           if (stage > 1) {
             e.currentTarget.src = `/flower/flower${flower}/${stage - 1}.png`;

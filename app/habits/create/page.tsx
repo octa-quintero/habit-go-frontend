@@ -42,7 +42,6 @@ export default function CreateHabitPage() {
       await habitsService.create(formData);
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('Error al crear hábito:', err);
       const errorMessage = err.response?.data?.message || 'Error al crear el hábito';
       setError(errorMessage);
     } finally {

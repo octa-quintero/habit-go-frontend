@@ -26,7 +26,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
       {/* Desktop Version */}
       <div className="hidden sm:flex min-h-screen items-center justify-center p-4">
         <PixelCard gap="gap-0">
-          <div className="flex flex-col h-full py-6 sm:py-8 px-3 sm:px-4">
+          <div className="flex flex-col w-full py-6 sm:py-8 px-3 sm:px-4">
             {/* Logo y Título - Al principio */}
             <div className="flex flex-row items-center justify-between w-full gap-2 sm:gap-4 mb-4 sm:mb-6" style={{ height: 'auto' }}>
               <PixelText 
@@ -58,7 +58,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             </div>
 
             {/* Contenido Principal */}
-            <div className="w-full mb-2 sm:mb-3 flex-grow">
+            <div className="w-full mb-2 sm:mb-3">
               {children}
             </div>
 

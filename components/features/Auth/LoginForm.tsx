@@ -29,12 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const formDataRef = useRef(formData);
-
-  // Actualizar ref cuando formData cambia
-  useEffect(() => {
-    formDataRef.current = formData;
-  }, [formData]);
+  const internalFormRef = useRef<HTMLFormElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, checked, value } = e.target;
@@ -53,10 +48,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
   const handleSubmit = useCallback(async (e?: React.FormEvent | null) => {
     if (e) e.preventDefault();
     
-    const currentData = formDataRef.current;
-
     // Validaciones básicas
-    if (!currentData.username.trim() || !currentData.password) {
+    if (!formData.username.trim() || !formData.password) {
       setError('Todos los campos son obligatorios');
       return;
     }
@@ -68,15 +61,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
     try {
       // Preparar datos para enviar
       const loginPayload = {
-        email: currentData.username.trim(),
-        password: currentData.password,
+        email: formData.username.trim(),
+        password: formData.password,
       };
       
       // El backend espera email, pero aceptaremos username también
       const response = await authService.login(loginPayload);
 
       // TODO: Implementar lógica de "Recuérdame" con localStorage
-      if (currentData.rememberMe) {
+      if (formData.rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
 
@@ -106,7 +99,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
     } finally {
       setLoading(false);
     }
-  }, [onSuccess, router]);
+  }, [formData, onSuccess, router]);
 
   // Exponer la función de submit a través del ref
   useEffect(() => {
@@ -123,7 +116,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', formRe
   }, [loading, onLoadingChange]);
 
   return (
-    <form onSubmit={handleSubmit} className={`w-full flex flex-col gap-3 ${className}`}>
+    <form ref={internalFormRef} onSubmit={handleSubmit} className={`w-full flex flex-col gap-3 ${className}`}>
       <PixelInput
         label="Usuario"
         id="username"

@@ -63,7 +63,6 @@ export default function ProfilePage() {
         email: profile.email,
       });
     } catch (err: any) {
-      console.error('Error al cargar perfil:', err);
       setError('No se pudo cargar el perfil');
     } finally {
       setLoading(false);
@@ -162,7 +161,6 @@ export default function ProfilePage() {
       clearAuth();
       router.push('/');
     } catch (err: any) {
-      console.error('Error al eliminar cuenta:', err);
       setError(err.response?.data?.message || 'Error al eliminar la cuenta');
       setSaving(false);
     }

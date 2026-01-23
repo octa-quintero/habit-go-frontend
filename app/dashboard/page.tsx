@@ -44,13 +44,8 @@ export default function DashboardPage() {
       setLoading(true);
       setError(''); // Limpiar errores anteriores
       const data = await habitsService.getAll();
-      console.log('[Dashboard] Habits loaded:', data.map(h => ({ id: h.id, title: h.title, streak: h.streak })));
       setHabits(data);
     } catch (err: any) {
-      console.error('Error completo al cargar hábitos:', err);
-      console.error('Response:', err.response);
-      console.error('Message:', err.message);
-      
       // Si el error es de autenticación, redirigir a login
       if (err.response?.status === 401) {
         clearAuth();
@@ -86,7 +81,6 @@ export default function DashboardPage() {
         await loadHabits();
       }, 100);
     } catch (err: any) {
-      console.error('Error al marcar hábito:', err);
       const errorMessage = err.response?.data?.message || 'Error al marcar como completado';
       setError(errorMessage);
       
@@ -105,7 +99,6 @@ export default function DashboardPage() {
       // Recargar hábitos después de eliminar
       await loadHabits();
     } catch (err: any) {
-      console.error('Error al eliminar hábito:', err);
       const errorMessage = err.response?.data?.message || 'Error al eliminar el hábito';
       setError(errorMessage);
       setTimeout(() => setError(''), 3000);
@@ -182,9 +175,9 @@ export default function DashboardPage() {
             label="Recompensas"
             variant="white"
             onClick={() => router.push('/rewards')}
-            minWidth={130}
-            minHeight={40}
-            maxWidth={155}
+            minWidth={120}
+            minHeight={50}
+            maxWidth={120}
             maxHeight={50}
           />
           <SpriteButton
@@ -230,9 +223,9 @@ export default function DashboardPage() {
               variant="white"
               onClick={() => router.push('/rewards')}
               minWidth={85}
-              minHeight={40}
+              minHeight={38}
               maxWidth={110}
-              maxHeight={40}
+              maxHeight={38}
             />
             <SpriteButton
               label="Salir"
@@ -348,14 +341,7 @@ export default function DashboardPage() {
                     {firstThreeHabits.map((habit) => {
                       const maxStage = 7;
                       const currentStage = Math.min(habit.streak + 1, maxStage);
-                      
-                      console.log('[Dashboard] Habit:', { 
-                        id: habit.id, 
-                        title: habit.title, 
-                        streak: habit.streak, 
-                        currentStage 
-                      });
-                      
+
                       return (
                         <div
                           key={`${habit.id}-${habit.streak}`}
