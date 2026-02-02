@@ -33,7 +33,7 @@ Aplicación web dedicada a gestionar y motivar el cumplimiento de hábitos diari
 **Desafíos Técnicos:**
 - Sincronización en tiempo real entre dispositivos (desktop y mobile)
 - Gestión de datos complejos (hábitos, registros diarios, rachas)
-- Interfaz intuitiva que funcione en cualquier dispositivo
+- Interfaz intuitiva que funcione en cualquier dispositivo...
 
 ## Solución Propuesta 💡
 
